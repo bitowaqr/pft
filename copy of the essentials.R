@@ -98,7 +98,7 @@ wft_pc<-function(page="Influenza",lang="de",start_date=Sys.time()-24*60*60,end_d
   names(df)<-page
   return(df) 
 }# function closing
-wft_pc<-function(page="Influenza", lang="de",start_date=Sys.time()-24*60*60, end_date=Sys.time(),  timezone="GMT",status=0){
+# wft_pc<-function(page="Influenza", lang="de",start_date=Sys.time()-24*60*60, end_date=Sys.time(),  timezone="GMT",status=0){
   require(RJSONIO)
   require(RCurl)
   require(pageviews)
@@ -288,9 +288,6 @@ wft_lang_titles<-function(page="Influenza",origin_lang="en",filter_lang=c("de","
   return(lang_titles)
 }
 
-
-
-
 wft_weeks_to_days<-function(week_dates,weekly_counts){
   if(class(week_dates)=="Date"){ # daily dates
     temp_days<-NULL
@@ -399,7 +396,7 @@ update_input_wiki<-function(type=c("wiki_primary","wiki_linked","wiki_related","
   list_of_inputs<-store_input(lang=lang,type = type[i], input_list = look_up_missing_wiki_data)
   
 }
-auto_update_wiki_primary_part1<-function(lang_code=lang){
+#auto_update_wiki_primary_part1<-function(lang_code=lang){
   xxx<-as.character(wft_lang_titles(page="Influenza",origin_lang = "en",filter_lang= lang_code)[2,3])
   list_item<-which(names(list_of_inputs)==lang_code)
   
@@ -409,10 +406,10 @@ auto_update_wiki_primary_part1<-function(lang_code=lang){
   return(list_of_inputs)
   
 }
-auto_update_wiki_primary_part2<-function(lang_code=lang){
+#auto_update_wiki_primary_part2<-function(lang_code=lang){
   list_of_inputs<-update_input_wiki(type="wiki_primary",lang=lang_code)
 }
-wft_update_any_type<-function(lang, type_of_input="wiki_linked"){ 
+#wft_update_any_type<-function(lang, type_of_input="wiki_linked"){ 
   select_list<-which(names(list_of_inputs)==lang)
   select_type<-which(names(list_of_inputs[[select_list]])==type_of_input)
   df_temp<-list_of_inputs[[select_list]][[select_type]]

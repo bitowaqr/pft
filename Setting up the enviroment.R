@@ -5,13 +5,11 @@
 ###                                                                 ###
 ###-----------------------------------------------------------------###
 ###-----------------------------------------------------------------###
- #n
-# load reference lists
-country_list<-read.csv(file= "/Users/waqr/Documents/Wikipedia Flu Trend/outcome_data/country_list.csv")
+
+####---->  load reference lists
+country_list<-read.csv(file= "/Users/waqr/Documents/Wikipedia Flu Trend/outcome_data/country_list.csv")[,-c(1,2,4)]
 language_table<-read.csv(file= "/Users/waqr/Documents/Wikipedia Flu Trend/outcome_data/language_list.csv")
 
-
-###-----------------------------------------------------------------###
 ###---setting up a lookup list for search terms-
 new_terms_lookup<-0
 if(new_terms_lookup==1){
@@ -70,12 +68,11 @@ if(new_terms_lookup==1){
                             random_pages=list(random_pages[[i]]))} # combining primary, related, linked
   save(lookup_terms,file="/Users/waqr/Documents/Wikipedia Flu Trend/data sets/lookup_terms.RData")
 }
-
 load(file="/Users/waqr/Documents/Wikipedia Flu Trend/data sets/lookup_terms.RData")
+rm(new_terms_lookup)
 
-###-----------------------------------------------------------------###
 ####----> LIST OF OUTCOMES
-set_up_new_list_of_outcomes<-0
+set_up_new_list_of_outcomes<-1
 if(set_up_new_list_of_outcomes==1){
   list_of_outcomes<-list()
   for(i in 1:length(country_list$country_code_lowcaps)){
@@ -84,7 +81,7 @@ if(set_up_new_list_of_outcomes==1){
                                                 code_uppercaps=as.character(country_list$country_code[i])),
                                 dependents=data.frame(date=seq(from=as.Date("2010-01-01"),to=as.Date(Sys.Date()),by=1),
                                                       Influenza_AB_lab_incidence=NA,
-                                                      Influenza_AB_lab_incidence_std=NA))
+                                                      ili_incidence=NA))
   }
   names(list_of_outcomes)<-country_list$description
   
@@ -99,11 +96,10 @@ if(set_up_new_list_of_outcomes==1){
   list_of_outcomes<-store_outcomes(code="de",type_of_outcome = "Influenza_AB_lab_incidence_std",outcome_data = scale(de_ili1$daily_count_temp),dates=de_ili1$temp_days)
   save(list_of_outcomes,file="/Users/waqr/Documents/Wikipedia Flu Trend/data sets/list_of_outcomes.RData")
 }
-
 load(file="/Users/waqr/Documents/Wikipedia Flu Trend/data sets/list_of_outcomes.RData")
+rm(set_up_new_list_of_outcomes)
 
-###-----------------------------------------------------------------###
-# list_of_inputs - EMPTY
+####----> Set up a fresh, new list_of_inputs 
 set_up_new_list_of_inputs<-0
 if(set_up_new_list_of_inputs==1){
 list_of_inputs <- sapply(language_table$ISO_639_1,function(x) NULL)
@@ -124,12 +120,7 @@ for(i in 1:length(language_table$ISO_639_1)){
 }
 save(list_of_inputs,file="/Users/waqr/Documents/Wikipedia Flu Trend/data sets/list_of_inputs.RData")
 }
-
 load(file="/Users/waqr/Documents/Wikipedia Flu Trend/data sets/list_of_inputs.RData")
+rm(set_up_new_list_of_inputs)
 
-#save(list_of_inputs,file="/Users/waqr/Documents/Wikipedia Flu Trend/data sets/input_big_BACKUP.RData")
-#load(file="/Users/waqr/Documents/Wikipedia Flu Trend/data sets/input_big_BACKUP.RData")
-
-
-  
   
