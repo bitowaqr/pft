@@ -330,6 +330,38 @@ pft_simple_trend<-function(x,s.window=7, t.window=NULL){
   temp.stl=stl(ts(x,freq=7),s.window=7,t.window=t.window)
   return(temp.stl$time.series[,2])
 }
+load_url <- function (url, ..., sha1 = NULL,env=new.env()) { # loads stuff from github, used in load input
+  # based very closely on code for devtools::source_url
+  stopifnot(is.character(url), length(url) == 1)
+  temp_file <- tempfile()
+  on.exit(unlink(temp_file))
+  request <- httr::GET(url)
+  httr::stop_for_status(request)
+  writeBin(httr::content(request, type = "raw"), temp_file)
+  file_sha1 <- digest::digest(file = temp_file, algo = "sha1")
+  if (is.null(sha1)) {
+    message("SHA-1 hash of file is ", file_sha1)
+  }
+  else {
+    if (nchar(sha1) < 6) {
+      stop("Supplied SHA-1 hash is too short (must be at least 6 characters)")
+    }
+    file_sha1 <- substr(file_sha1, 1, nchar(sha1))
+    if (!identical(file_sha1, sha1)) {
+      stop("SHA-1 hash of downloaded file (", file_sha1, 
+           ")\n  does not match expected value (", sha1, 
+           ")", call. = FALSE)
+    }
+  }
+  load(temp_file, envir = env)
+  return(get(ls(env)[1],envir=env))
+}
+load_input<-function(lang,df=list_of_inputs){ # this functions loads inputs from github projectflutrend to list_of inputs
+  path=paste("https://github.com/projectflutrend/pft/blob/master/inputdata/inputs_",lang,".RData?raw=true",sep="")
+  input=load_url(path) 
+  df[[which(names(df) %in% lang)]]=input
+  return(df)
+} # example: list_of_inputs=load_input("de)
 
 # Working Horses
 
