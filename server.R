@@ -12,10 +12,11 @@ shinyServer(function(input, output,session) {
                                                                       "netherlands",
                                                                       "viet nam",
                                                                       "italy"))]
+  if(!exists("example1a")) {
   example1a<-example1a; example1b<-example1b
   example2a<-example2a; example2b<-example2b
   example3a<-example3a; example3b<-example3b
-  e1<-NULL; e2<-NULL;list1<-NULL; list2<-NULL
+  e1<-NULL; e2<-NULL;list1<-NULL; list2<-NULL}
 
 
   get_country <- reactive({
