@@ -72,7 +72,7 @@ load(file="/Users/waqr/Documents/Wikipedia Flu Trend/data sets/lookup_terms.RDat
 rm(new_terms_lookup)
 
 ####----> LIST OF OUTCOMES
-set_up_new_list_of_outcomes<-1
+set_up_new_list_of_outcomes<-0
 if(set_up_new_list_of_outcomes==1){
   list_of_outcomes<-list()
   for(i in 1:length(country_list$country_code_lowcaps)){
@@ -123,4 +123,6 @@ save(list_of_inputs,file="/Users/waqr/Documents/Wikipedia Flu Trend/data sets/li
 load(file="/Users/waqr/Documents/Wikipedia Flu Trend/data sets/list_of_inputs.RData")
 rm(set_up_new_list_of_inputs)
 
-  
+
+#save(list_of_inputs,file="/Users/waqr/Documents/Wikipedia Flu Trend/data sets/list_of_inputs.RData")
+
