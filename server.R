@@ -13,9 +13,9 @@ shinyServer(function(input, output,session) {
                                                                       "viet nam",
                                                                       "italy"))]
   if(!exists("example1a")) {
-  example1a<-example1a; example1b<-example1b
-  example2a<-example2a; example2b<-example2b
-  example3a<-example3a; example3b<-example3b
+  example1a<-NULL; example1b<-NULL
+  example2a<-NULL; example2b<-NULL
+  example3a<-NULL; example3b<-NULL
   e1<-NULL; e2<-NULL;list1<-NULL; list2<-NULL}
 
 
@@ -263,15 +263,15 @@ shinyServer(function(input, output,session) {
     
     
     
-    observeEvent(input$example.1, {
-      list1<<-example1a
-      list2<<-example1b})
-    observeEvent(input$example.2, {
-      list1<<-example2a
-      list2<<-example2b})
-    observeEvent(input$example.3, {
-      list1<<-example3a
-      list2<<-example3b})
+#    observeEvent(input$example.1, {
+ #     list1<<-example1a
+  #    list2<<-example1b})
+#    observeEvent(input$example.2, {
+ #     list1<<-example2a
+  #    list2<<-example2b})
+#    observeEvent(input$example.3, {
+ #     list1<<-example3a
+  #    list2<<-example3b})
      
     
 }) # shiny server close
