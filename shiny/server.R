@@ -2,20 +2,24 @@
 require(xtable)
 require(shiny)
 
+available_inputs=NULL; available_outcomes=NULL
+for(i in 1:length(list_of_inputs)){
+  available_inputs[i]=length(list_of_inputs[[i]][[1]][[1]])==4
+}
+for(i in 1:length(list_of_outcomes)){
+  available_outcomes[i]=sum(!is.na(list_of_outcomes[[i]]$dependents[,-1]))>0
+}
+list_of_inputs<-list_of_inputs[available_inputs]
+list_of_outcomes<-list_of_outcomes[available_outcomes]
+
+language_table<-language_table[language_table$ISO_639_1 %in% names(list_of_inputs),]
+country_list<-country_list[country_list$description %in% names(list_of_outcomes),]
+
+
 shinyServer(function(input, output,session) { 
   # 1. Setting up the data that will be used for this
-  list_of_inputs<-list_of_inputs[c(names(list_of_inputs) %in% c("de",
-                                                                "nl",
-                                                                "vi",
-                                                                "it",
-                                                                "ja",
-                                                                "zh"))]
-  list_of_outcomes<-list_of_outcomes[c(names(list_of_outcomes) %in% c("germany",
-                                                                      "netherlands",
-                                                                      "viet nam",
-                                                                      "italy",
-                                                                      "japan",
-                                                                      "china"))]
+  
+ 
   #if(!exists("example1a")) {
   #example1a<-NULL; example1b<-NULL
   #example2a<-NULL; example2b<-NULL
@@ -86,7 +90,7 @@ shinyServer(function(input, output,session) {
   })     # update zoom 2 end
   
   
-  
+ 
   
   ### MODEL 1
   observeEvent(input$do, { 

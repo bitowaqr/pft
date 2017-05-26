@@ -1,20 +1,16 @@
 #ui
-library(shiny)
-library(ggplot2)
+require(shiny)
+require(ggplot2)
 
-list_of_inputs<-list_of_inputs[c(names(list_of_inputs) %in% c("de",
-                                                              "nl",
-                                                              "vi",
-                                                              "it",
-                                                              "ja",
-                                                              "zh"))]
-list_of_outcomes<-list_of_outcomes[c(names(list_of_outcomes) %in% c("germany",
-                                                                    "netherlands",
-                                                                    "viet nam",
-                                                                    "italy",
-                                                                    "japan",
-                                                                    "china"))]
-
+available_inputs=NULL; available_outcomes=NULL
+for(i in 1:length(list_of_inputs)){
+  available_inputs[i]=length(list_of_inputs[[i]][[1]][[1]])==4
+}
+for(i in 1:length(list_of_outcomes)){
+  available_outcomes[i]=sum(!is.na(list_of_outcomes[[i]]$dependents[,-1]))>0
+}
+list_of_inputs<-list_of_inputs[available_inputs]
+list_of_outcomes<-list_of_outcomes[available_outcomes]
 language_table<-language_table[language_table$ISO_639_1 %in% names(list_of_inputs),]
 country_list<-country_list[country_list$description %in% names(list_of_outcomes),]
 
@@ -39,7 +35,7 @@ shinyUI(fluidPage(
                                    # Type of input
                                    selectInput("pft_model.type_of_input", "type of input", multiple = T,
                                                choices = names(list_of_inputs$de),
-                                               selected = "wiki_primary"), # wiki_related missing
+                                               selected = "wiki_primary"),
                                    # Start and End date selector
                                    dateRangeInput("pft_model.start.end.dates", "Set Time period",
                                                   #start = "2010-01-01",end="2016-12-31",

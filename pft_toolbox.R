@@ -306,21 +306,32 @@ reformat_wiki<-function(df,start_date=min(df[[1]]$date),end_date=max(df[[1]]$dat
   
   return(big_temp_df)
 }
-pft_add_terms<-function(type="related",terms=c("Husten","Schnupfen"), add=1, lang="de"){
-  item<-which(names(lookup_terms)==lang)
-  list_type<-which(names(lookup_terms[[lang]])==type)
-  if(sum(lookup_terms[[lang]][[list_type]] %in% terms)==0){
-    if(add==1){
-      if(class(lookup_terms[[lang]][[list_type]])=="character"){lookup_terms[[lang]][[list_type]]<-  c(lookup_terms[[lang]][[list_type]],terms) }  
-      if(class(lookup_terms[[lang]][[list_type]])=="list"){ lookup_terms[[lang]][[list_type]]<-  c(as.character(data.frame(lookup_terms[[lang]][[list_type]])[,1]),terms) } 
-      if(class(lookup_terms[[lang]][[list_type]])=="NULL"){lookup_terms[[lang]][[list_type]]<-terms }  
+pft_add_related_terms<-function(type="wiki_related",terms=c("Fieber","Husten","Schnupfen"), lang="de",df=list_of_inputs,  start_date = as.Date("2010-01-01"), end_date = Sys.Date()){
+  item<-which(names(df)==lang)
+  list_type<-which(names(df[[lang]])==type)
+  old.df<-df[[lang]][[list_type]]
+  if(  class(old.df)=="data.frame"){
+  new_pages<-pft_pc(page = terms,
+         lang=lang,
+         start_date = start_date,
+         end_date = end_date)
+  df[[lang]][[list_type]]<-new_pages
+  }
+  if(  class(old.df)=="list"){
+    available_terms<-names(old.df)
+    terms<-terms[which(!terms %in% available_terms)]
+    new_pages<-pft_pc(page = terms,
+                      lang=lang,
+                      start_date = start_date,
+                      end_date = end_date)
+    for(i in 1:length(terms)){
+      names<-c(names(df[[lang]][[list_type]]),names(new_pages)[i])
+      df[[lang]][[list_type]][[length(df[[lang]][[list_type]])+1]]=new_pages[[i]]
+      names(df[[lang]][[list_type]])<-names
     }
-    if(add==0){
-      lookup_terms[[lang]][[list_type]]<-terms}}
-  else( cat("one or more terms already exist"))
-  cat("Last terms for lang=",lang,"&type=",list_type,":\n",paste("...", tail(lookup_terms[[lang]][[list_type]],sep="")))
-  return(lookup_terms)
-}
+   }
+  return(df)
+  } # define a related term(s), download it and store it in list_of_inputs
 pft_random_wiki_pages<-function(lang="en",number="1",status=1){
   require(RCurl)
   require(RJSONIO)
@@ -374,6 +385,16 @@ load_input<-function(lang,df=list_of_inputs){ # this functions loads inputs from
   df[[which(names(df) %in% lang[i])]]=input}
   return(df)
 } # example: list_of_inputs=load_input("de)
+load_flunet<-function(country,name_in_list=NULL,df=list_of_outcomes){ # this functions loads inputs from github projectflutrend to list_of inputs
+  if(is.null(name_in_list)){name_in_list=country}
+  for(i in 1:length(country)){
+    cat("load",i,"of",length(country))
+    path=paste("https://github.com/projectflutrend/pft/blob/master/flunet.data/",country[i],".rdata?raw=true",sep="")
+    outcome=load_url(path) 
+    df[[which(names(df) %in% name_in_list[i])]]=outcome}
+  return(df)
+} # example: list_of_inputs=load_input("de)
+
 load_local<-function(temp_file){
   env=new.env()
   load(temp_file, envir = env)
