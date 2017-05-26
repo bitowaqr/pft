@@ -257,7 +257,9 @@ shinyServer(function(input, output,session) {
       eval_pft_model(list2$m2,method = "nowcast" )}) # PLOT PICK 2
     }) # Plot Nowcast 2
     observeEvent(input$forecast2, {  
+      input$refresh
       output$forecast.plot2<-renderPlot({
+       
         eval_pft_model(list2$m2,method = "prophet",days_forecast = as.numeric(input$days.forecast2), forecast_from = NULL) }) # PLOT forecast
     }) # PLOT forecast 
     
@@ -286,6 +288,15 @@ shinyServer(function(input, output,session) {
  #     list1<<-example3a
   #    list2<<-example3b})
      
+    
+    
+
+    
+    
+    
+    
+    
+    
     
 }) # shiny server close
 

@@ -179,9 +179,9 @@ shinyUI(fluidPage(
                                                br(),br(),
                                                actionButton("example.2","Ex.2"),
                                                br(),br(),
-                                               actionButton("example.3","Ex.3")
+                                               actionButton("example.3","Ex.3"))
                                                
-                                               ))# tab panel 3 ends here
+                                               )# tab panel 3 ends here
              
              
   ),
@@ -192,4 +192,4 @@ shinyUI(fluidPage(
   
   
   
-))
+)) 

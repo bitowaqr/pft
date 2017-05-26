@@ -943,7 +943,7 @@ pft_model<-function(lang="nl",
       all.data.ith<-rbind(train.data.ith, test.data.ith)
       
       # the lm model
-      lm.trained.ith<-lm(outcome~. ,data=train.data.ith)
+      lm.trained.ith<-lm(outcome~.-date ,data=train.data.ith)
       
       # A big list with all relevant values + plots
       PREDICTED[[i]]=list(
