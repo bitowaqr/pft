@@ -39,6 +39,10 @@ list_of_inputs<- load_input(c("de","nl","vi","it","ja","zh","cs","fa","fr","he",
 # list_of_outcomes<-pft_store_outcomes(country= ,source_df= )
 list_of_outcomes<- load_flunet(country = c("netherlands","viet nam","japan","china","indonesia","france","israel","italy","malaysia","norway","thailand","sweden","poland"))
 list_of_outcomes<- load_flunet(country = c("iran","korea","czechia"),name_in_list=c("iran, islamic republic of","korea, republic of","czech republic"))
+# list_of_outcomes<-load_local(file.choose())
+
+#
+#-----> VIRGIN ISLANDS???
 
 
 # RU shiny app

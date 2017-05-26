@@ -26,7 +26,7 @@ shinyUI(fluidPage(
                                                choices = country_list$description,selected="netherlands"),
                                    
                                    selectInput("pft_model.type_of_outcome", "Type of outcome", 
-                                               choices = names(list_of_outcomes$germany$dependents[,-1])),
+                                               choices = names(list_of_outcomes[[1]]$dependents[,-1])),
                                    
                                    
                                    # Wiki language 
