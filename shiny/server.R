@@ -7,16 +7,20 @@ shinyServer(function(input, output,session) {
   list_of_inputs<-list_of_inputs[c(names(list_of_inputs) %in% c("de",
                                                                 "nl",
                                                                 "vi",
-                                                                "it"))]
+                                                                "it",
+                                                                "ja",
+                                                                "zh"))]
   list_of_outcomes<-list_of_outcomes[c(names(list_of_outcomes) %in% c("germany",
                                                                       "netherlands",
                                                                       "viet nam",
-                                                                      "italy"))]
-  if(!exists("example1a")) {
-  example1a<-NULL; example1b<-NULL
-  example2a<-NULL; example2b<-NULL
-  example3a<-NULL; example3b<-NULL
-  e1<-NULL; e2<-NULL;list1<-NULL; list2<-NULL}
+                                                                      "italy",
+                                                                      "japan",
+                                                                      "china"))]
+  #if(!exists("example1a")) {
+  #example1a<-NULL; example1b<-NULL
+  #example2a<-NULL; example2b<-NULL
+  #example3a<-NULL; example3b<-NULL
+  #e1<-NULL; e2<-NULL;list1<-NULL; list2<-NULL}
 
 
   get_country <- reactive({

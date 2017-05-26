@@ -374,6 +374,11 @@ load_input<-function(lang,df=list_of_inputs){ # this functions loads inputs from
   df[[which(names(df) %in% lang[i])]]=input}
   return(df)
 } # example: list_of_inputs=load_input("de)
+load_local<-function(temp_file){
+  env=new.env()
+  load(temp_file, envir = env)
+  return(get(ls(env)[1],envir=env))}
+
 
 pft_weeks_to_days<-function(weekly_counts,  # vector with outcome ata
                             week_dates=NULL, # vector with weekly dates

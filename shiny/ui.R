@@ -5,11 +5,15 @@ library(ggplot2)
 list_of_inputs<-list_of_inputs[c(names(list_of_inputs) %in% c("de",
                                                               "nl",
                                                               "vi",
-                                                              "it"))]
+                                                              "it",
+                                                              "ja",
+                                                              "zh"))]
 list_of_outcomes<-list_of_outcomes[c(names(list_of_outcomes) %in% c("germany",
                                                                     "netherlands",
                                                                     "viet nam",
-                                                                    "italy"))]
+                                                                    "italy",
+                                                                    "japan",
+                                                                    "china"))]
 
 language_table<-language_table[language_table$ISO_639_1 %in% names(list_of_inputs),]
 country_list<-country_list[country_list$description %in% names(list_of_outcomes),]
