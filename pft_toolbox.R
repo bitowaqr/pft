@@ -553,7 +553,9 @@ pft_initiate<-function(lang="nl",
 
 eval_pft_model<-function(pft_model_df, # a list, created by pft_model
                          method="plot_mean_performance", # "plot_mean_performance","nowcast" or "plot1"
-                         eval_date="20160801" # for method = "plot1"
+                         eval_date="20160801", # for method = "plot1"
+                         days_forecast=28, # for prophet future df
+                         forecast_from=NULL
                                     ){ 
   require(ggplot2)
   if(method=="plot1"){
@@ -718,6 +720,24 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
       geom_vline(xintercept = as.numeric(start.at))
     return(now.plot)
   } # if nowcast bracket end
+  
+  if(method=="prophet"){
+    train_df<-data.frame(date=pft_model_df[[1]]$lm.model$model$date,outcome=pft_model_df[[1]]$lm.model$model$outcome)
+    for(i in 1:length(pft_model_df)){ # retriving dates and actual outcomes from pft_model, unneccassarily difficult!?
+      temp2<-data.frame(date= pft_model_df[[i]]$lm.model$model$date,
+                        outcome=pft_model_df[[i]]$lm.model$model$outcome)
+      train_df=rbind(train_df,temp2[-which(temp2$date %in% train_df$date),])
+    }
+    df=data.frame(ds=train_df$date,y=train_df$outcome)
+    if(class(forecast_from)=="Date"){df=df[df$ds<=forecast_from,]}
+    last_data_date<-max(df$ds)
+    prophet<-prophet(df,yearly.seasonality=TRUE)
+    future <- make_future_dataframe(prophet, periods = days_forecast)
+    forecast <- predict(prophet, future)
+    forecast_plot<-plot(prophet, forecast) +
+      geom_vline(xintercept = as.numeric(last_data_date))
+    return(forecast_plot)
+  } # if prophet bracket end
   
 }  # eval_date="20160801")# format="YYYYMMDD") or NULL
 

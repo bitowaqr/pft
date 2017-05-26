@@ -166,8 +166,12 @@ shinyServer(function(input, output,session) {
     observeEvent(input$nowcast, {  
     output$nowcast.plot<-renderPlot({
       
-      eval_pft_model(list1$m1,method = "nowcast",lang=language_table$ISO_639_1[language_table$language %in% list1$info1$lang]) }) # PLOT PICK 2
+      eval_pft_model(list1$m1,method = "nowcast") }) # PLOT PICK 2
     }) # PLOT NOWCAST
+    observeEvent(input$forecast, {  
+      output$forecast.plot<-renderPlot({
+        eval_pft_model(list1$m1,method = "prophet",days_forecast = as.numeric(input$days.forecast), forecast_from = NULL) }) # PLOT forecast
+    }) # PLOT forecast 
     output$summary.stats1 <- renderTable({
       Listener2 <- input$do
       isolate(backgroundchange())      
@@ -250,8 +254,13 @@ shinyServer(function(input, output,session) {
       eval_pft_model(list2$m2,method = "plot1",eval_date=format(input$pickdate2,format="%Y%m%d")) }) # PLOT PICK 2
     observeEvent(input$nowcast2, { 
     output$nowcast.plot2<-renderPlot({
-      eval_pft_model(list2$m2,method = "nowcast",lang=language_table$ISO_639_1[language_table$language %in% list2$info2$lang]) }) # PLOT PICK 2
+      eval_pft_model(list2$m2,method = "nowcast" )}) # PLOT PICK 2
     }) # Plot Nowcast 2
+    observeEvent(input$forecast2, {  
+      output$forecast.plot2<-renderPlot({
+        eval_pft_model(list2$m2,method = "prophet",days_forecast = as.numeric(input$days.forecast2), forecast_from = NULL) }) # PLOT forecast
+    }) # PLOT forecast 
+    
     output$summary.stats2 <- renderTable({
       Listener2 <- input$do2
       isolate(backgroundchange())      

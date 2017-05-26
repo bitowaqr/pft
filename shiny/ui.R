@@ -158,6 +158,23 @@ shinyUI(fluidPage(
                       
                       mainPanel(plotOutput("nowcast.plot"),plotOutput("nowcast.plot2"))
              ),
+             tabPanel("Forecast",
+                      sidebarPanel("Facebook's 'Prophet' Forecasting,",br(),"Based on the Influenza incidence data.",br(),"Please make sure you have sufficient (>2 years) training data",
+                                   br(),br(),
+                                   actionButton("forecast","forecast for model 1"),
+                                   selectInput("days.forecast","Days forecast",
+                                                choices =c("28","56","182","365"),selected = "28"),
+                                   br(),br(),
+                                   actionButton("forecast2","forecast for model 2"),
+                                   selectInput("days.forecast2","Days forecast",
+                                               choices =c("28","56","182","365"),selected = "28")),
+                                   
+                      
+                                  # actionButton("nowcast2","nowcast for model 2")),
+                      
+                      mainPanel(plotOutput("forecast.plot"),plotOutput("forecast.plot2")
+                                )
+             ),
              tabPanel("Examples",sidebarPanel( actionButton("example.1","Ex.1"),
                                                br(),br(),
                                                actionButton("example.2","Ex.2"),
