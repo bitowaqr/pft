@@ -390,6 +390,7 @@ load_flunet<-function(country,name_in_list=NULL,df=list_of_outcomes){ # this fun
   for(i in 1:length(country)){
     cat("load",i,"of",length(country))
     path=paste("https://github.com/projectflutrend/pft/blob/master/flunet.data/",country[i],".rdata?raw=true",sep="")
+    path=sub(" ","%20",path)
     outcome=load_url(path) 
     df[[which(names(df) %in% name_in_list[i])]]=outcome}
   return(df)
