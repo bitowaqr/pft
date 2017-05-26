@@ -219,6 +219,17 @@ store_outcomes<-function(country=NA,code=NA,type_of_outcome,outcome_data,dates){
   sum(is.na(list_of_outcomes[[list_item]][[2]][rows,column]))
   return(list_of_outcomes)
 }
+pft_store_outcomes<-function(country,source_df,taget_list=list_of_outcomes){ #df=data.frame(date,ili_incicence) no evaluations, straight forward function compared to store_outcomes()
+  if(sum(is.na(source_df))>0){stop("NAs not allowed in outcome data")} 
+  list_item<-which(country_list$description==country)
+  column<-which(names(taget_list$andorra$dependents) %in% names(source_df)[-which(names(source_df)=="date")] )
+  rows1<-match(source_df$date,taget_list$andorra$dependents$date) # df must have a type date date vector and a outcome vector with a meaningful name!
+  rows1<-rows1[!is.na(rows1)]
+  rows2<-match(taget_list$andorra$dependents$date,source_df$date) # df must have a type date date vector and a outcome vector with a meaningful name!
+  rows2<-rows2[!is.na(rows2)]
+  taget_list[[list_item]][[2]][rows1,column]=c(source_df[rows2,-which(names(source_df)=="date")])
+  return(taget_list)
+}
 update_input_wiki<-function(type_of_inputs=c("wiki_primary","wiki_linked","wiki_related"),lang=lang,df=list_of_inputs){
   
   item<-which(names(list_of_inputs)==lang)
@@ -357,6 +368,7 @@ load_url <- function (url, ..., sha1 = NULL,env=new.env()) { # loads stuff from 
 } 
 load_input<-function(lang,df=list_of_inputs){ # this functions loads inputs from github projectflutrend to list_of inputs
   for(i in 1:length(lang)){
+    cat("load",i,"of",length(lang))
   path=paste("https://github.com/projectflutrend/pft/blob/master/inputdata/inputs_",lang[i],".RData?raw=true",sep="")
   input=load_url(path) 
   df[[which(names(df) %in% lang[i])]]=input}
@@ -386,7 +398,7 @@ pft_weeks_to_days<-function(weekly_counts,  # vector with outcome ata
     df$week_dates<-ISOweek2date( paste(gsub("-","-W",df$week_dates),"-7",sep="")) #"2017-01->2017-W01-07->2017-01-05"
   } 
   if(format=="%Y-W%V-%u"){
-    df$week_dates<-ISOweek2date(week_dates)
+    df$week_dates<-ISOweek2date(paste(week_dates[1]))
   }  
   if(format=="%Y-%U-%u"){
     df$week_dates<-as.Date(week_dates,format="%Y-%U-%u")
@@ -536,15 +548,14 @@ pft_initiate<-function(lang="nl",
 
 eval_pft_model<-function(pft_model_df, # a list, created by pft_model
                          method="plot_mean_performance", # "plot_mean_performance","nowcast" or "plot1"
-                         eval_date="20160801", # for method = "plot1"
-                         lang="nl", detrending=1,detrend_window=21,detrend_robust=T,wiki_normalization=0      # for method= "nowcast"
+                         eval_date="20160801" # for method = "plot1"
                                     ){ 
   require(ggplot2)
   if(method=="plot1"){
     where.to.look<-which(names(pft_model_df)== paste("t",eval_date,sep=""))
-    train.data=pft_model_df[[where.to.look]]$train.data
+    train.data=pft_model_df[[where.to.look]]$lm.model$model
     test.data=pft_model_df[[where.to.look]]$test.data
-    all.data=pft_model_df[[where.to.look]]$combined.data
+    all.data=rbind(pft_model_df[[where.to.look]]$lm.model$model,pft_model_df[[where.to.look]]$test.data)
     lm.trained=pft_model_df[[where.to.look]]$lm.model
     
     eval_from_date_plot=ggplot(data=all.data,aes(x=date,y=outcome)) +
@@ -589,17 +600,21 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
     ### Plotting per day
     # creating reference data.frame in a complicated way...
     temp1<-NULL; temp2<-NULL; temp3<-NULL; 
-    source_df<-data.frame(date=pft_model_df[[1]]$combined.data$date,outcome=pft_model_df[[1]]$combined.data$outcome)
-    train_df<-data.frame(date=pft_model_df[[1]]$train.data$date,outcome=pft_model_df[[1]]$train.data$outcome,trained.predicted=predict(pft_model_df[[1]]$lm.model))
+    combined.date<-c(pft_model_df[[1]]$lm.model$model$date,pft_model_df[[1]]$test.data$date)
+    combined.outcome<-c(pft_model_df[[1]]$lm.model$model$outcome,pft_model_df[[1]]$test.data$outcome)
+    source_df<-data.frame(date=combined.date,outcome=combined.outcome)
+    train_df<-data.frame(date=pft_model_df[[1]]$lm.model$model$date,outcome=pft_model_df[[1]]$lm.model$model$outcome,trained.predicted=predict(pft_model_df[[1]]$lm.model))
     test_df<-data.frame(date=pft_model_df[[1]]$test.data$date,outcome=pft_model_df[[1]]$test.data$outcome)
     
     for(i in 1:length(pft_model_df)){ # retriving dates and actual outcomes from pft_model, unneccassarily difficult!?
-      temp1<-data.frame(date= pft_model_df[[i]]$combined.data$date,
-                        outcome=pft_model_df[[i]]$combined.data$outcome)
+      combined.date<-c(pft_model_df[[i]]$lm.model$model$date,pft_model_df[[i]]$test.data$date)
+      combined.outcome<-c(pft_model_df[[i]]$lm.model$model$outcome,pft_model_df[[i]]$test.data$outcome)
+      
+      temp1<-data.frame(date=combined.date,outcome=combined.outcome)
       source_df=rbind(source_df,temp1[-which(temp1$date %in% source_df$date),])
       
-      temp2<-data.frame(date= pft_model_df[[i]]$train.data$date,
-                        outcome=pft_model_df[[i]]$train.data$outcome,
+      temp2<-data.frame(date= pft_model_df[[i]]$lm.model$model$date,
+                        outcome=pft_model_df[[i]]$lm.model$model$outcome,
                         trained.predicted=predict(pft_model_df[[i]]$lm.model))
       train_df=rbind(train_df,temp2[-which(temp2$date %in% train_df$date),])
       
@@ -632,17 +647,8 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
     test_actual_vs_pred_d28= test_actual_rate + 
       geom_line(data=nowcast_eval,aes(x=date,y=pred.day.28,col=paste("pred.day.28")) )
     
-    
     nowcast_diff<-merge(nowcast_eval,test_df,by="date",all=F)
     nowcast_diff[,-c(1,30)]<-nowcast_eval[,-1]-   nowcast_diff$outcome
-    
-    test_diff_plot= ggplot(data=nowcast_diff,aes(x=date,y=pred.day.1)) +
-      geom_line() +
-      geom_line(data=nowcast_diff,aes(x=date,y=pred.day.7,col=paste("pred.day.7")) ) +
-      geom_line(data=nowcast_diff,aes(x=date,y=pred.day.14,col=paste("pred.day.14")) ) +
-      geom_line(data=nowcast_diff,aes(x=date,y=pred.day.21,col=paste("pred.day.21")) ) +
-      geom_line(data=nowcast_diff,aes(x=date,y=pred.day.28,col=paste("pred.day.28")) ) +
-      geom_line(aes(y=0))
     
     # How did the training period go?
     training_actual_rate=ggplot(data=train_df,aes(x=date,y=outcome)) +
@@ -650,10 +656,6 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
     
     training_actual_vs_pred= training_actual_rate + 
       geom_line(data=train_df,aes(x=date,y=trained.predicted,col=paste("last training prediction")) ) 
-    
-    training_diff_plot= ggplot(data=train_df,aes(x=date,y=trained.predicted-outcome)) +
-      geom_line() +
-      geom_line(aes(y=0))
     
     # Evaluating the mean error per prediction for day 1-28
     mean.error.per.day=as.numeric(colMeans(nowcast_diff[,-c(1,29)],na.rm=T))
@@ -674,12 +676,10 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
                                       test_actual_vs_pred_d14=test_actual_vs_pred_d14,
                                       test_actual_vs_pred_d21=test_actual_vs_pred_d21,
                                       test_actual_vs_pred_d28=test_actual_vs_pred_d28,
-                                      test_diff_plot=test_diff_plot,
                                       mean.error.plot=mean.error.plot,
                                       mean.sqr.error.plot=mean.sqr.error.plot,
                                       training_actual_rate=training_actual_rate,
-                                      training_actual_vs_pred=training_actual_vs_pred,
-                                      training_diff_plot=training_diff_plot))
+                                      training_actual_vs_pred=training_actual_vs_pred))
     return( performance_eval  )
   } # if plot_mean_performance bracket end
   
@@ -687,20 +687,20 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
   if(method=="nowcast"){ 
     latest.lm=pft_model_df[[length(pft_model_df)]] # get latest model from pft_model
     today= Sys.Date() # what date is today?
-    start.at=max(latest.lm$train.data$date)   # looking 6 months back?!
+    start.at=max(latest.lm$lm.model$model$date)   # looking 6 months back?!
     start.at<-as.Date(ifelse(length(seq(from=start.at,to=today,by=1))>60,start.at,today-60),origin=as.Date("1970-01-01"))
     pages=row.names(data.frame(latest.lm$lm.model$coefficients)) # names for looking up recent wikipedia data
     pages=pages[!pages  %in% c("date","(Intercept)")] # eliminating date and intercepts from page nams
     new_wiki_data=tryCatch({ pft_pc(page=pages,  # look up recent wikipedia page views
-                                    lang=lang,
+                                    lang=attr(pft_model_df, "lang"),
                                     start_date = start.at,
                                     end_date = today)},error=function(e){stop("Sorry, some of the pages that are used in the model can not be found on today's Wikipedia")})
     new_wiki_data=reformat_wiki(df=new_wiki_data[which(lapply(new_wiki_data, length)>0)]) # eliminate all items with length = 0 (intercept, date,...)
     
-    if(detrending==1){
+    if(attr(pft_model_df,"detrending")==1){
       names<-names(new_wiki_data)
       for(o in 1:length(names(new_wiki_data)[-1]))
-        new_wiki_data[,o+1]<-as.numeric(stl(ts(new_wiki_data[,o+1],freq=7),s.window = 7,t.window=detrend_window,robust=detrend_robust)$time.series[,2])
+        new_wiki_data[,o+1]<-as.numeric(stl(ts(new_wiki_data[,o+1],freq=7),s.window = 7,t.window=attr(pft_model_df,"detrend_window"),robust=attr(pft_model_df,"detrend_robust"))$time.series[,2])
     }
     nowcast.predictions=predict(latest.lm$lm.model, newdata=new_wiki_data) # make new predictions with recent wiki data
     nowcast.df=data.frame(date=new_wiki_data$date, prediction=nowcast.predictions)
@@ -712,7 +712,7 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
       geom_line(data=latest.lm$lm.model$model, aes(x=date,y=outcome),col="black",lwd=1.5) +
       geom_vline(xintercept = as.numeric(start.at))
     return(now.plot)
-  } # if noewcast bracket end
+  } # if nowcast bracket end
   
 }  # eval_date="20160801")# format="YYYYMMDD") or NULL
 
@@ -885,9 +885,7 @@ pft_model<-function(lang="nl",
         ),  
         
         lm.model=lm.trained.ith, 
-        train.data=model.train.data.ith,
-        test.data=model.test.data.ith,
-        combined.data=model.all.data.ith) # end list PREDICTED  
+        test.data=model.test.data.ith) # end list PREDICTED  
         
         
         names(PREDICTED)[i]<-paste("t",format(test.start.ith,format="%Y%m%d"),sep="")     
@@ -935,9 +933,9 @@ pft_model<-function(lang="nl",
           mod.tested.r.sqr.lm=cor(predict(lm.trained.ith,newdata = test.data.ith), test.data.ith$outcome)^2),  
         
         lm.model=lm.trained.ith, # end list PREDICTED 
-        train.data=train.data.ith,
-        test.data=test.data.ith,
-        combined.data=all.data.ith
+        
+        test.data=test.data.ith
+
       )
       
       names(PREDICTED)[i]<-paste("t",format(test.start.ith,format="%Y%m%d"),sep="")      
@@ -949,6 +947,16 @@ pft_model<-function(lang="nl",
     } # lm simple PREDCITED loop bracket
     
   } # ### Mehtod="simple.lm" bracket ends ###
-  
+  attributes(PREDICTED)$lang<-lang
+  attributes(PREDICTED)$country<-country
+  attributes(PREDICTED)$start_date<-start_date
+  attributes(PREDICTED)$end_date<-end_date
+  attributes(PREDICTED)$method<-method
+  attributes(PREDICTED)$type_of_input<-type_of_input
+  attributes(PREDICTED)$type_of_outcome<-type_of_outcome
+  attributes(PREDICTED)$detrending<-detrending
+  attributes(PREDICTED)$detrend_window<-detrend_window
+  attributes(PREDICTED)$detrend_robust<-detrend_robust
+  attributes(PREDICTED)$wiki_normalization<-wiki_normalization
   return(PREDICTED)
 } 
