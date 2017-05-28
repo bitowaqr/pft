@@ -1,15 +1,10 @@
 ###-----------------------------------------------------------------###
 ###-----------------------------------------------------------------###
-###                                                                 ###
-###                 Project FLu Trend - Toolbox                     ###
-###                                                                 ###
+###           Project FLu Trend.alpha - Toolbox                     ###
 ###-----------------------------------------------------------------###
 ###-----------------------------------------------------------------###
 
 pft_pc<-function(page="Influenza",lang="de",start_date=Sys.time()-24*60*60,end_date=Sys.time(),timezone="GMT",status=0){
-  require(RJSONIO)
-  require(RCurl)
-  require(pageviews)
   start_date<-format(start_date, tz=timezone,usetz=TRUE); end_date<-format(end_date, tz=timezone,usetz=TRUE)
   start_date_old_method=start_date;end_date_old_method=end_date;
   start_date_new_method=ISOdatetime(2016,01,01,0,0,01,tz=timezone); end_date_new_method=NULL
@@ -55,12 +50,12 @@ pft_pc<-function(page="Influenza",lang="de",start_date=Sys.time()-24*60*60,end_d
         df_temp<-unique(df_temp)
         if(status==1){ print(paste("site=", p,"/",length(page)," date=",i,"/",length(time_temp_months) ) )}
         
-      }#month loop closing <2016
+      } # month loop closing <2016
       df[[p]]<-df_temp
     }#page loop closing <2016
     
     names(df)<-c(page)
-  }#if <2016 included closing
+  } # if <2016 included closing
   
   if(as.Date(end_date)>=as.Date("2016-01-01") & length(df)>=1) {
     for(p in 1:length(page)){
@@ -103,10 +98,6 @@ pft_pc<-function(page="Influenza",lang="de",start_date=Sys.time()-24*60*60,end_d
   return(df) 
 }# function closing
 pft_lp<-function(page="Influenza",lang="de") { # the API of wikipedia takes a query and gives infrmation in json format
-  require(RJSONIO)
-  require(RCurl)
-  require(purrr)
-  
   page=gsub(" ","_",page)
   temp_page<-paste("https://",lang,".wikipedia.org/w/api.php?action=query&prop=links&pllimit=500&format=json&titles=",page,  sep="")
   linked_pages<-getURL(temp_page) # this query asks for links on the respective page
@@ -147,9 +138,6 @@ pft_lp<-function(page="Influenza",lang="de") { # the API of wikipedia takes a qu
   return(links)  
 }
 pft_lp_names<-function(page="Influenza",lang="de") { # the API of wikipedia takes a query and gives infrmation in json format
-  require(RJSONIO)
-  require(RCurl)
-  require(purrr)
   
   page=gsub(" ","_",page)
   temp_page<-paste("https://",lang,".wikipedia.org/w/api.php?action=query&prop=links&pllimit=500&format=json&titles=",page,  sep="")
@@ -187,7 +175,6 @@ pft_lp_names<-function(page="Influenza",lang="de") { # the API of wikipedia take
   return(links)  
 }
 pft_lang_titles<-function(page="Influenza",origin_lang="en",filter_lang=c("de","it","nl")){
-  require( wikipediatrend)
   temp<-data.frame(code=origin_lang,lang=language_table[c( match(origin_lang,language_table$ISO_639_1)),2] ,page=page)
   titles <- data.frame(wp_linked_pages( page= page,lang=origin_lang))
   lang_titles<-data.frame(code=filter_lang,lang=language_table[c( match(filter_lang,language_table$ISO_639_1)),2])
@@ -333,8 +320,6 @@ pft_add_related_terms<-function(type="wiki_related",terms=c("Fieber","Husten","S
   return(df)
   } # define a related term(s), download it and store it in list_of_inputs
 pft_random_wiki_pages<-function(lang="en",number="1",status=1){
-  require(RCurl)
-  require(RJSONIO)
   list_of_random_wiki_pages<-NULL
   for(i in 1:number){
     if(status==1){cat(i,"/",number,"\n")}
@@ -379,7 +364,7 @@ load_url <- function (url, ..., sha1 = NULL,env=new.env()) { # loads stuff from 
 } 
 load_input<-function(lang,df=list_of_inputs){ # this functions loads inputs from github projectflutrend to list_of inputs
   for(i in 1:length(lang)){
-    cat("load",i,"of",length(lang))
+    cat("load input",i,"of",length(lang))
   path=paste("https://github.com/projectflutrend/pft/blob/master/inputdata/inputs_",lang[i],".RData?raw=true",sep="")
   input=load_url(path) 
   df[[which(names(df) %in% lang[i])]]=input}
@@ -388,26 +373,23 @@ load_input<-function(lang,df=list_of_inputs){ # this functions loads inputs from
 load_flunet<-function(country,name_in_list=NULL,df=list_of_outcomes){ # this functions loads inputs from github projectflutrend to list_of inputs
   if(is.null(name_in_list)){name_in_list=country}
   for(i in 1:length(country)){
-    cat("load",i,"of",length(country))
+    cat("load flunet dataset",i,"of",length(country))
     path=paste("https://github.com/projectflutrend/pft/blob/master/flunet.data/",country[i],".rdata?raw=true",sep="")
     path=sub(" ","%20",path)
     outcome=load_url(path) 
     df[[which(names(df) %in% name_in_list[i])]]=outcome}
   return(df)
 } # example: list_of_inputs=load_input("de)
-
 load_local<-function(temp_file){
   env=new.env()
   load(temp_file, envir = env)
   return(get(ls(env)[1],envir=env))}
-
 
 pft_weeks_to_days<-function(weekly_counts,  # vector with outcome ata
                             week_dates=NULL, # vector with weekly dates
                             format="%Y-%u", # dates can have several formats:'%Y-%u' (2010-01),'%Y-W%V-%u'(2010-W01) and '%Y-%U-%u'(2010-01-07) 
                             special.fun="53to1" # special functions to deal with specialitirs of certain countries or datasets
                                                 ){ 
-  require(ISOweek)
   
   
   
@@ -579,7 +561,7 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
                          days_forecast=28, # for prophet future df
                          forecast_from=NULL
                                     ){ 
-  require(ggplot2)
+  
   if(method=="plot1"){
     where.to.look<-which(names(pft_model_df)== paste("t",eval_date,sep=""))
     train.data=pft_model_df[[where.to.look]]$lm.model$model
@@ -687,7 +669,7 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
       geom_line(data=train_df,aes(x=date,y=trained.predicted,col=paste("last training prediction")) ) 
     
     # Evaluating the mean error per prediction for day 1-28
-    mean.error.per.day=as.numeric(colMeans(nowcast_diff[,-c(1,29)],na.rm=T))
+    mean.error.per.day=as.numeric(colMeans(sqrt((nowcast_diff[,-c(1,29)])^2),na.rm=T)) # version 2
     mean.sqr.error.per.day=as.numeric(colMeans(nowcast_diff[,-c(1,29)]^2,na.rm=T))
     
     mean.error.plot=ggplot(data=NULL,aes(x=1:28,y=mean.error.per.day))+
@@ -783,10 +765,7 @@ pft_model<-function(lang="nl",
                     time_lag= 0, # how many days is official data behind? -7 for 1 week behind page view data
                     wiki_normalization=0,
                     status=1){ 
-  # Loading required packages
-  require(glmnet)
-  require(ISOweek)
-  require(ggplot2)
+
   
   # setting up the working df
   df<-pft_build_up(start_date = start_date, 
