@@ -168,8 +168,7 @@ shinyServer(function(input, output,session) {
     output$pick <- renderPlot({
       eval_pft_model(list1$m1,method = "plot1",eval_date=format(input$pickdate,format="%Y%m%d")) }) # PLOT PICK 1
     observeEvent(input$nowcast, {  
-    output$nowcast.plot<-renderPlot({
-      
+      output$nowcast.plot<-renderPlot({
       eval_pft_model(list1$m1,method = "nowcast") }) # PLOT PICK 2
     }) # PLOT NOWCAST
     observeEvent(input$forecast, {  
@@ -266,7 +265,6 @@ shinyServer(function(input, output,session) {
        
         eval_pft_model(list2$m2,method = "prophet",days_forecast = as.numeric(input$days.forecast2), forecast_from = NULL) }) # PLOT forecast
     }) # PLOT forecast 
-    
     output$summary.stats2 <- renderTable({
       Listener2 <- input$do2
       isolate(backgroundchange())      
@@ -281,25 +279,15 @@ shinyServer(function(input, output,session) {
     }) # a refresh button
     
     
-    
-#    observeEvent(input$example.1, {
- #     list1<<-example1a
-  #    list2<<-example1b})
-#    observeEvent(input$example.2, {
- #     list1<<-example2a
-  #    list2<<-example2b})
-#    observeEvent(input$example.3, {
- #     list1<<-example3a
-  #    list2<<-example3b})
-     
-    
-    
-
-    
-    
-    
-    
-    
+    observeEvent(input$example.1, {
+      if(exists("example1a")){list1<<-example1a}
+      if(exists("example1b")){list2<<-example1b}})
+    observeEvent(input$example.1, {
+      if(exists("example2a")){list1<<-example2a}
+      if(exists("example2b")){list2<<-example2b}})
+    observeEvent(input$example.1, {
+      if(exists("example3a")){list1<<-example3a}
+      if(exists("example3b")){list2<<-example3b}})
     
     
 }) # shiny server close

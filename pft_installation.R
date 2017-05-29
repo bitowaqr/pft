@@ -13,8 +13,8 @@
 # For each session data needs to be downloaded only once. 
 # (If an error occurs in "source_https", the alternative "getURL" should be used)
 
-if(exists("first_start")==0){
 # (Install and) load dependent packages
+install.pft<- function(){
 pft_packages <- function(package){
   for(i in 1:length(package)){
   if(eval(parse(text=paste("require(",package[i],")")))==0) {
@@ -30,7 +30,8 @@ source_https <- function(u, unlink.tmp.certs = FALSE) {
 
   # read script lines from website using a security certificate
   if(!file.exists("cacert.pem")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile = "cacert.pem")
-  #script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
+  # alternatively use
+  # script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
   script <- getURL(u)
   if(unlink.tmp.certs) unlink("cacert.pem")
   
@@ -52,6 +53,7 @@ list_of_inputs<- load_input(c("de","nl","vi","it","ja","zh","cs","fa","fr","he",
 
 # ADD OUTCOME DATA
 # country_list # ---> consult country list
+# Load WHO-Flunet data
 list_of_outcomes<- load_flunet(country = c("netherlands","germany","viet nam","japan","china","indonesia","france","israel","italy","malaysia","norway","thailand","sweden","poland"))
 list_of_outcomes<- load_flunet(country = c("iran","korea","czechia","usa","uk"),name_in_list=c("iran, islamic republic of","korea, republic of","czech republic","united states","united kingdom"))
 
@@ -65,10 +67,17 @@ list_of_outcomes<- load_flunet(country = c("iran","korea","czechia","usa","uk"),
 
 # CREATE EXAMPLES to start shiny app with... 
 list1<-list(e1=NULL,m1=NULL,info1=NULL)
-list2<-list(e2=NULL,m2=NULL,info2=NULL)}
+list2<-list(e2=NULL,m2=NULL,info2=NULL)
 
-# All neccessary files have been downloaded
-first_start="First start completed!"
+# All neccessary files have been created
+}
+
+if(exists("first_start")==0) {
+  install.pft()
+  first_start="First start completed!"
+  
+}
+
 
 # RUN SHINY APP FROM GITHUB
 runGitHub("pft", "projectflutrend", subdir = "shiny")
