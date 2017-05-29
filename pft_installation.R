@@ -20,7 +20,7 @@ pft_packages <- function(package){
   install.packages(package)}}
   return (eval(parse(text=paste("require(",package,")"))))
 }
-required_packages<-c("ISOweek","wikipediatrend","RCurl","RJSONIO","RCurl","shiny","prophet","dplyr","ggplot2","RJSONIO","purrr","xtable","glmnet","devtools")
+required_packages<-c("pageviews","ISOweek","wikipediatrend","RCurl","RJSONIO","RCurl","shiny","prophet","dplyr","ggplot2","RJSONIO","purrr","xtable","glmnet","devtools")
 pft_packages(required_packages)
 
 # load pft toolbox
@@ -29,8 +29,8 @@ source_https <- function(u, unlink.tmp.certs = FALSE) {
 
   # read script lines from website using a security certificate
   if(!file.exists("cacert.pem")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile = "cacert.pem")
-  script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
-  #  alternative: script <- getURL(u)
+  #script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
+  script <- getURL(u)
   if(unlink.tmp.certs) unlink("cacert.pem")
   
   # parase lines and evealuate in the global environement
@@ -57,10 +57,10 @@ list_of_outcomes<- load_flunet(country = c("iran","korea","czechia","usa","uk"),
 # You can also use your own data. Easiest way is to use "pft_store_outcome" function (see below)
 # The data will remain on your computer and will not be uploaded
 # Example:
-temp_df<-load_local("/Users/waqr/Documents/Project Flu Trend/data/nl.ili.rdata")
-temp_df<-data.frame(date=temp_df$date,ili_incidence=temp_df$ili_incidence)
-temp_df=temp_df[!is.na(temp_df$ili_incidence),]
-list_of_outcomes=pft_store_outcomes(country="netherlands",source_df = temp_df)
+# temp_df<-load_local("/Users/waqr/Documents/Project Flu Trend/data/nl.ili.rdata")
+# temp_df<-data.frame(date=temp_df$date,ili_incidence=temp_df$ili_incidence)
+# temp_df=temp_df[!is.na(temp_df$ili_incidence),]
+# list_of_outcomes=pft_store_outcomes(country="netherlands",source_df = temp_df)
 
 # CREATE EXAMPLES to start shiny app with... 
 list1<-list(e1=NULL,m1=NULL,info1=NULL)
