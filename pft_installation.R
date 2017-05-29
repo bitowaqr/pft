@@ -1,5 +1,6 @@
 #----------------------------------#
-# PROJECT FLU TREND PLATFORM.alpha #
+# PROJECT FLU TREND PLATFORM       #
+# a.k.a. WikipediaFluTrend.alpha   #
 #                                  #
 # by Paul Schneider                #
 # Schneider.paulpeter@gmail.com    #
@@ -67,7 +68,7 @@ list1<-list(e1=NULL,m1=NULL,info1=NULL)
 list2<-list(e2=NULL,m2=NULL,info2=NULL)}
 
 # All neccessary files have been downloaded
-first_start=1
+first_start="First start completed!"
 
 # RUN SHINY APP FROM GITHUB
 runGitHub("pft", "projectflutrend", subdir = "shiny")
