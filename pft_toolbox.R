@@ -384,7 +384,78 @@ load_local<-function(temp_file){
   env=new.env()
   load(temp_file, envir = env)
   return(get(ls(env)[1],envir=env))}
+pft_initiate<-function(lang="nl",start_date=as.Date("2010-01-01"),end_date=Sys.Date(),status=1,df=list_of_inputs){
+  item<-which(names(list_of_inputs)==lang)
+  x<-NULL
+  if(!is.null(df[[item]]$wiki_lookup_searches$wiki_primary_term)){
+    cat("initiate wiki_primary \n")
+    df[[item]]$wiki_primary<-pft_pc(page=df[[item]]$wiki_lookup_searches$wiki_primary_term,
+                                    lang=lang,
+                                    start_date=start_date,
+                                    end_date=end_date,
+                                    status=status)}
+  
+  if(!is.null(df[[item]]$wiki_lookup_searches$wiki_linked_terms)){
+    cat("initiate wiki_linked \n")
+    df[[item]]$wiki_linked<-NULL
+    for(i in 1:length(df[[item]]$wiki_lookup_searches$wiki_linked_terms)){
+      cat("linked page",i,"of",length(df[[item]]$wiki_lookup_searches$wiki_linked_terms),"\n")
+      tryCatch({
+        x<-length(df[[item]]$wiki_linked)+1
+        df[[item]]$wiki_linked[[x]]<-pft_pc(page=df[[item]]$wiki_lookup_searches$wiki_linked_terms[i],
+                                            lang=lang,
+                                            start_date=start_date,
+                                            end_date=end_date,
+                                            status=0)[[1]]
+        names(df[[item]]$wiki_linked)[x]<-df[[item]]$wiki_lookup_searches$wiki_linked_terms[i]
+      },
+      error=function(e) {cat("wiki page not found \n")})}
+    
+  }
+  
+  
+  if(!is.null(df[[item]]$wiki_lookup_searches$wiki_related_terms)){
+    cat("initiate wiki_related \n")
+    df[[item]]$wiki_related<-NULL
+    for(i in 1:length(df[[item]]$wiki_lookup_searches$wiki_related_terms)){
+      cat("related page",i,"of",length(df[[item]]$wiki_lookup_searches$wiki_related_terms),"\n")
+      tryCatch({
+        x<-length(df[[item]]$wiki_related)+1
+        df[[item]]$wiki_related[[x]]<-pft_pc(page=df[[item]]$wiki_lookup_searches$wiki_related_terms[i],
+                                             lang=lang,
+                                             start_date=start_date,
+                                             end_date=end_date,
+                                             status=0)[[1]]
+        names(df[[item]]$wiki_related)[x]<-df[[item]]$wiki_lookup_searches$wiki_related_terms[i]
+      },
+      error=function(e) {cat("wiki page not found \n")})}
+  }
+  
+  if(!is.null(df[[item]]$wiki_lookup_searches$wiki_random_page)){
+    cat("initiate wiki_random \n")
+    df[[item]]$wiki_random=NULL
+    for(i in 1:length(df[[item]]$wiki_lookup_searches$wiki_random_page)){
+      cat("random page",i,"of",length(df[[item]]$wiki_lookup_searches$wiki_random_page),"\n")
+      tryCatch({
+        x<-length(df[[item]]$wiki_random)+1
+        df[[item]]$wiki_random[[x]]<-pft_pc(page=df[[item]]$wiki_lookup_searches$wiki_random_page[i],
+                                            lang=lang,
+                                            start_date=start_date,
+                                            end_date=end_date,
+                                            status=0)[[1]]
+        names(df[[item]]$wiki_random)[x]<-df[[item]]$wiki_lookup_searches$wiki_random_page[i]
+        
+      },
+      error=function(e) {cat("wiki page not found \n")})}
+    
+  }
+  
+  #  df[[item]]$  ...more?
+  
+  return(df)
+}
 
+# More complex functions:
 pft_weeks_to_days<-function(weekly_counts,  # vector with outcome ata
                             week_dates=NULL, # vector with weekly dates
                             format="%Y-%u", # dates can have several formats:'%Y-%u' (2010-01),'%Y-W%V-%u'(2010-W01) and '%Y-%U-%u'(2010-01-07) 
@@ -479,81 +550,6 @@ pft_build_up<-function(country="germany",
   if(status==1){ cat("We have",sum(is.na(df_temp))," missing values in the dataframe \n 
                      min date, max date, type in, type out")}
   }
-
-pft_initiate<-function(lang="nl",
-                       start_date=as.Date("2010-01-01"),
-                       end_date=Sys.Date(),
-                       status=1,
-                       df=list_of_inputs){
-  item<-which(names(list_of_inputs)==lang)
-  x<-NULL
-  if(!is.null(df[[item]]$wiki_lookup_searches$wiki_primary_term)){
-    cat("initiate wiki_primary \n")
-    df[[item]]$wiki_primary<-pft_pc(page=df[[item]]$wiki_lookup_searches$wiki_primary_term,
-                                    lang=lang,
-                                    start_date=start_date,
-                                    end_date=end_date,
-                                    status=status)}
-  
-  if(!is.null(df[[item]]$wiki_lookup_searches$wiki_linked_terms)){
-    cat("initiate wiki_linked \n")
-    df[[item]]$wiki_linked<-NULL
-    for(i in 1:length(df[[item]]$wiki_lookup_searches$wiki_linked_terms)){
-      cat("linked page",i,"of",length(df[[item]]$wiki_lookup_searches$wiki_linked_terms),"\n")
-      tryCatch({
-        x<-length(df[[item]]$wiki_linked)+1
-        df[[item]]$wiki_linked[[x]]<-pft_pc(page=df[[item]]$wiki_lookup_searches$wiki_linked_terms[i],
-                                            lang=lang,
-                                            start_date=start_date,
-                                            end_date=end_date,
-                                            status=0)[[1]]
-        names(df[[item]]$wiki_linked)[x]<-df[[item]]$wiki_lookup_searches$wiki_linked_terms[i]
-      },
-      error=function(e) {cat("wiki page not found \n")})}
-    
-  }
-  
-  
-  if(!is.null(df[[item]]$wiki_lookup_searches$wiki_related_terms)){
-    cat("initiate wiki_related \n")
-    df[[item]]$wiki_related<-NULL
-    for(i in 1:length(df[[item]]$wiki_lookup_searches$wiki_related_terms)){
-      cat("related page",i,"of",length(df[[item]]$wiki_lookup_searches$wiki_related_terms),"\n")
-      tryCatch({
-        x<-length(df[[item]]$wiki_related)+1
-        df[[item]]$wiki_related[[x]]<-pft_pc(page=df[[item]]$wiki_lookup_searches$wiki_related_terms[i],
-                                             lang=lang,
-                                             start_date=start_date,
-                                             end_date=end_date,
-                                             status=0)[[1]]
-        names(df[[item]]$wiki_related)[x]<-df[[item]]$wiki_lookup_searches$wiki_related_terms[i]
-      },
-      error=function(e) {cat("wiki page not found \n")})}
-  }
-  
-  if(!is.null(df[[item]]$wiki_lookup_searches$wiki_random_page)){
-    cat("initiate wiki_random \n")
-    df[[item]]$wiki_random=NULL
-    for(i in 1:length(df[[item]]$wiki_lookup_searches$wiki_random_page)){
-      cat("random page",i,"of",length(df[[item]]$wiki_lookup_searches$wiki_random_page),"\n")
-      tryCatch({
-        x<-length(df[[item]]$wiki_random)+1
-        df[[item]]$wiki_random[[x]]<-pft_pc(page=df[[item]]$wiki_lookup_searches$wiki_random_page[i],
-                                            lang=lang,
-                                            start_date=start_date,
-                                            end_date=end_date,
-                                            status=0)[[1]]
-        names(df[[item]]$wiki_random)[x]<-df[[item]]$wiki_lookup_searches$wiki_random_page[i]
-        
-      },
-      error=function(e) {cat("wiki page not found \n")})}
-    
-  }
-  
-  #  df[[item]]$  ...more?
-  
-  return(df)
-}
 
 eval_pft_model<-function(pft_model_df, # a list, created by pft_model
                          method="plot_mean_performance", # "plot_mean_performance","nowcast" or "plot1"

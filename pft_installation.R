@@ -5,6 +5,14 @@
 # Schneider.paulpeter@gmail.com    #
 #----------------------------------#
 
+
+# This file installs and loads all packages, internal functions and 
+# data neccessary to start WikipediaFluTrend.alpha app from the browser. 
+# When launched for the first time, it may take a few minutes. 
+# For each session data needs to be downloaded only once. 
+# (If an error occurs in "source_https", the alternative "getURL" should be used)
+
+if(exists("first_start")==0){
 # (Install and) load dependent packages
 pft_packages <- function(package){
   for(i in 1:length(package)){
@@ -22,6 +30,7 @@ source_https <- function(u, unlink.tmp.certs = FALSE) {
   # read script lines from website using a security certificate
   if(!file.exists("cacert.pem")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile = "cacert.pem")
   script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
+  #  alternative: script <- getURL(u)
   if(unlink.tmp.certs) unlink("cacert.pem")
   
   # parase lines and evealuate in the global environement
@@ -42,58 +51,26 @@ list_of_inputs<- load_input(c("de","nl","vi","it","ja","zh","cs","fa","fr","he",
 
 # ADD OUTCOME DATA
 # country_list # ---> consult country list
-# list_of_outcomes<-pft_store_outcomes(country= ,source_df= )
 list_of_outcomes<- load_flunet(country = c("netherlands","germany","viet nam","japan","china","indonesia","france","israel","italy","malaysia","norway","thailand","sweden","poland"))
-list_of_outcomes<- load_flunet(country = c("iran","korea","czechia","usa"),name_in_list=c("iran, islamic republic of","korea, republic of","czech republic","united states"))
-# list_of_outcomes<-load_local(file.choose())
+list_of_outcomes<- load_flunet(country = c("iran","korea","czechia","usa","uk"),name_in_list=c("iran, islamic republic of","korea, republic of","czech republic","united states","united kingdom"))
 
+# You can also use your own data. Easiest way is to use "pft_store_outcome" function (see below)
+# The data will remain on your computer and will not be uploaded
+# Example:
+temp_df<-load_local("/Users/waqr/Documents/Project Flu Trend/data/nl.ili.rdata")
+temp_df<-data.frame(date=temp_df$date,ili_incidence=temp_df$ili_incidence)
+temp_df=temp_df[!is.na(temp_df$ili_incidence),]
+list_of_outcomes=pft_store_outcomes(country="netherlands",source_df = temp_df)
 
 # CREATE EXAMPLES to start shiny app with... 
-if(0==1){
-m1<-pft_model(
-  lang="nl",
-  start_date=as.Date("2015-01-01"), 
-  end_date=as.Date("2015-05-01"),
-  type_of_outcome="Influenza_AB_lab_incidence",
-  country = "netherlands",
-  type_of_input = c("wiki_primary"),
-  method="simple.lm",
-  cv_fold=30, 
-  cv_lambda=as.character("1se"),     #cv_lambda,
-  grid=10^seq(10,-2,length=100),
-  start_date_eval="auto",  
-  end_date_eval="auto",   
-  training_period="past",
-  eval_period=28,
-  detrending=1,
-  detrend_window=21,
-  detrend_robust=T,
-  time_lag= 0, 
-  wiki_normalization=0,
-  status=1)
-e1<-eval_pft_model(m1,method = "plot_mean_performance")
-info1<-data.frame(country="netherlands",
-                  outcome="ili_incidence",
-                  lang="Dutch; Flemish",
-                  inputs="wiki_primary",
-                  method="simple.lm",
-                  training_period="past",
-                  time_lag="0")
-list1<-list(e1=e1,m1=m1,info1=info1)
-example1a<-list1
-list2<-list(e2=e1,m2=m1,info2=info1)
-example1b<-list2
-}
 list1<-list(e1=NULL,m1=NULL,info1=NULL)
-example1a<-list1
-list2<-list(e2=NULL,m2=NULL,info2=NULL)
-example1b<-list2
+list2<-list(e2=NULL,m2=NULL,info2=NULL)}
+
+# All neccessary files have been downloaded
+first_start=1
 
 # RUN SHINY APP FROM GITHUB
 runGitHub("pft", "projectflutrend", subdir = "shiny")
-
-
-
 
 # ... voila
 
