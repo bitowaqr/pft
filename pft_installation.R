@@ -1,20 +1,19 @@
-###################################################
-#            Wikipedia Flu Trend.alpha            #
-#                                                 #
-#                by Paul Schneider                #
-#           schneider.paulpeter@gmail.com         #
-###################################################
+###########################################################
+#                WIKIPEDIA FLU TREND.alpha                #
+#                                                         #
+#                    by Paul Schneider                    #
+#               schneider.paulpeter@gmail.com             #
+###########################################################
 #
 # This is the installation for the Wikipedia Flu Trend.alpha platform (WFT)
 #
-# Running the script will install and run the Wikipedia Flu Trend.alpha platform (WFT)
+# Running the script will install and launch the Wikipedia Flu Trend.alpha platform (WFT)
 # All required required R-packages, data and WFT functions will be downloaded 
 # When launched for the first time, this process may take a few minutes. 
-# Afterwards, the platform should automatically launch in your browser. 
-# The data needs to be downloaded for each R-session
+# Afterwards, the platform should automatically start in your browser. 
 #
 #
-# INSTALLATION DETAILS
+# ------ INSTALLATION DETAILS AND QUICK MANUAL -------
 #
 # 1. Install and load all required R-packages
 # 
@@ -42,56 +41,56 @@
 #
 # 5. Download and run shiny app in your browser
 # 
-# 
+#############################################################
 
 # INSTALL WFT
 if(exists("first_start")==FALSE) {
   # 1. INSTALL AND LOAD REQUIRED R-PACKAGES
-cat("INSTALL AND LOAD REQUIRED R-PACKAGES \n")
-pft_packages <- function(package){
-  for(i in 1:length(package)){
-  if(eval(parse(text=paste("require(",package[i],")")))==0) {
-  install.packages(package)}}
-  return (eval(parse(text=paste("require(",package,")"))))
-}
-required_packages<-c("pageviews","ISOweek","wikipediatrend","RCurl","RJSONIO","RCurl","shiny","prophet","dplyr","ggplot2","RJSONIO","purrr","xtable","glmnet","devtools")
-pft_packages(required_packages)
-
-# 2. LOAD WFT FUNCTIONS FROM GITHUB
-cat("LOAD WFT FUNCTIONS FROM GITHUB \n")
-source_https <- function(u, unlink.tmp.certs = FALSE) {
-  # load package
-
-  # read script lines from website using a security certificate
-  if(!file.exists("cacert.pem")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile = "cacert.pem")
-  # alternatively use
-  # script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
-  script <- getURL(u)
-  if(unlink.tmp.certs) unlink("cacert.pem")
+  cat("INSTALL AND LOAD REQUIRED R-PACKAGES \n")
+  pft_packages <- function(package){
+    for(i in 1:length(package)){
+      if(eval(parse(text=paste("require(",package[i],")")))==0) {
+        install.packages(package)}}
+    return (eval(parse(text=paste("require(",package,")"))))
+  }
+  required_packages<-c("pageviews","ISOweek","wikipediatrend","RCurl","RJSONIO","RCurl","shiny","prophet","dplyr","ggplot2","RJSONIO","purrr","xtable","glmnet","devtools")
+  pft_packages(required_packages)
   
-  # parase lines and evealuate in the global environement
-  eval(parse(text = script), envir= .GlobalEnv)
-}
-source_https("https://raw.githubusercontent.com/projectflutrend/pft/master/pft_toolbox.R")
-
-# 3. LOAD WFT INFRASTRUCTURE FROM GTIHUB
-cat("LOAD WFT INFRASTRUCTURE FROM GTIHUB \n")
-country_list<-read.csv(file= "https://raw.githubusercontent.com/projectflutrend/pft/master/country_list.csv")[,-c(1,2,4)]
-language_table<-read.csv(file="https://raw.githubusercontent.com/projectflutrend/pft/master/language_list.csv")
-lookup_terms<-load_url("https://github.com/projectflutrend/pft/blob/master/lookup_terms.RData?raw=true")
-list_of_inputs<- load_url("https://github.com/projectflutrend/pft/blob/master/list_of_inputs.RData?raw=true")
-list_of_outcomes<- load_url("https://github.com/projectflutrend/pft/blob/master/list_of_outcomes.rdata?raw=true")
-
-# 4. LOAD INPUT AND OUTCOME DATA
-# DOWNLOAD SAMPLE INPUT DATA
-cat("DOWNLOAD SAMPLE INPUT DATA \n")
-list_of_inputs<- load_input(c("de","nl","vi","it","ja","zh","cs","fa","fr","he","id","ko","no","pl","sv","th","en"))
-list_of_outcomes<- load_flunet(country = c("netherlands","germany","viet nam","japan","china","indonesia","france","israel","italy","malaysia","norway","thailand","sweden","poland"))
-list_of_outcomes<- load_flunet(country = c("iran","korea","czechia","usa","uk"),name_in_list=c("iran, islamic republic of","korea, republic of","czech republic","united states","united kingdom"))
-# + Load your own data...
-
-first_start="First start completed!"
-cat("Everything is set up \nWFT should be ready to go! \n")
+  # 2. LOAD WFT FUNCTIONS FROM GITHUB
+  cat("LOAD WFT FUNCTIONS FROM GITHUB \n")
+  source_https <- function(u, unlink.tmp.certs = FALSE) {
+    # load package
+    
+    # read script lines from website using a security certificate
+    if(!file.exists("cacert.pem")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile = "cacert.pem")
+    # alternatively use
+    # script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
+    script <- getURL(u)
+    if(unlink.tmp.certs) unlink("cacert.pem")
+    
+    # parase lines and evealuate in the global environement
+    eval(parse(text = script), envir= .GlobalEnv)
+  }
+  source_https("https://raw.githubusercontent.com/projectflutrend/pft/master/pft_toolbox.R")
+  
+  # 3. LOAD WFT INFRASTRUCTURE FROM GTIHUB
+  cat("LOAD WFT INFRASTRUCTURE FROM GTIHUB \n")
+  country_list<-read.csv(file= "https://raw.githubusercontent.com/projectflutrend/pft/master/country_list.csv")[,-c(1,2,4)]
+  language_table<-read.csv(file="https://raw.githubusercontent.com/projectflutrend/pft/master/language_list.csv")
+  lookup_terms<-load_url("https://github.com/projectflutrend/pft/blob/master/lookup_terms.RData?raw=true")
+  list_of_inputs<- load_url("https://github.com/projectflutrend/pft/blob/master/list_of_inputs.RData?raw=true")
+  list_of_outcomes<- load_url("https://github.com/projectflutrend/pft/blob/master/list_of_outcomes.rdata?raw=true")
+  
+  # 4. LOAD INPUT AND OUTCOME DATA
+  # DOWNLOAD SAMPLE INPUT DATA
+  cat("DOWNLOAD SAMPLE INPUT DATA \n")
+  list_of_inputs<- load_input(c("de","nl","vi","it","ja","zh","cs","fa","fr","he","id","ko","no","pl","sv","th","en"))
+  list_of_outcomes<- load_flunet(country = c("netherlands","germany","viet nam","japan","china","indonesia","france","israel","italy","malaysia","norway","thailand","sweden","poland"))
+  list_of_outcomes<- load_flunet(country = c("iran","korea","czechia","usa","uk"),name_in_list=c("iran, islamic republic of","korea, republic of","czech republic","united states","united kingdom"))
+  # + Load your own data...
+  
+  first_start="First start completed!"
+  cat("Everything is set up \nWFT should be ready to go! \n")
 }
 
 # 5. RUN SHINY APP FROM GITHUB
