@@ -171,11 +171,20 @@ shinyUI(fluidPage(
                       mainPanel(plotOutput("forecast.plot"),plotOutput("forecast.plot2")
                                 )
              ),
-             tabPanel("Examples",sidebarPanel( actionButton("example.1","Ex.1"),
+             tabPanel("Examples",sidebarPanel( "You can store examples using \n",
+                                               br(),"\n",                                             
+                                               br(),"\n",
+                                               "'list1<-list(e1,m1,info1)'",br(),
+                                               "'list2<-list(e2,m2,info2)'",br(),
+                                               "'example1a<-list1' \n",br(),
+                                               "'example1b<-list2' \n etc...",
+                                               br(),"\n",                                             
+                                               br(),"\n",
+                                               actionButton("example.1","load Example.1"),
                                                br(),br(),
-                                               actionButton("example.2","Ex.2"),
+                                               actionButton("example.2","load Example.2"),
                                                br(),br(),
-                                               actionButton("example.3","Ex.3"))
+                                               actionButton("example.3","load Example.3"))
                                                
                                                )# tab panel 3 ends here
              
