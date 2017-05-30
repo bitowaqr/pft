@@ -346,7 +346,6 @@ load_url <- function (url, ..., sha1 = NULL,env=new.env()) { # loads stuff from 
   writeBin(httr::content(request, type = "raw"), temp_file)
   file_sha1 <- digest::digest(file = temp_file, algo = "sha1")
   if (is.null(sha1)) {
-    message("Loading successful!")
   }
   else {
     if (nchar(sha1) < 6) {
@@ -360,6 +359,7 @@ load_url <- function (url, ..., sha1 = NULL,env=new.env()) { # loads stuff from 
     }
   }
   load(temp_file, envir = env)
+  message("Loading successful!")
   return(get(ls(env)[1],envir=env))
 } 
 load_input<-function(lang,df=list_of_inputs){ # this functions loads inputs from github projectflutrend to list_of inputs
