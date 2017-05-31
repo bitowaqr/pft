@@ -1,7 +1,10 @@
 ###########################################################
 #                WIKIPEDIA FLU TREND.alpha                #
 #                                                         #
-#                    by Paul Schneider                    #
+#                   Maastricht University &               #
+#   Netherlands institute for health services research    #
+#                                                         #
+#                   Contact: Paul Schneider               #
 #               schneider.paulpeter@gmail.com             #
 ###########################################################
 #
