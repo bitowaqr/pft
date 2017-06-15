@@ -79,11 +79,16 @@ if(exists("first_start")==FALSE) {
   # 3. LOAD WFT INFRASTRUCTURE FROM GTIHUB
   cat("LOAD WFT INFRASTRUCTURE FROM GTIHUB \n")
   country_list<-read.csv(file= "https://raw.githubusercontent.com/projectflutrend/pft/master/country_list.csv")[,-c(1,2,4)]
+  cat("country_list loaded \n")
   language_table<-read.csv(file="https://raw.githubusercontent.com/projectflutrend/pft/master/language_list.csv")
+  cat("language_table loaded \n")
   lookup_terms<-load_url("https://github.com/projectflutrend/pft/blob/master/lookup_terms.RData?raw=true")
+  cat("lookup_terms loaded \n")
   list_of_inputs<- load_url("https://github.com/projectflutrend/pft/blob/master/list_of_inputs.RData?raw=true")
+  cat("empty list_of_inputs loaded \n")
   list_of_outcomes<- load_url("https://github.com/projectflutrend/pft/blob/master/list_of_outcomes.rdata?raw=true")
-  
+  cat("empty list_of_outcomes loaded \n")
+   
   # 4. LOAD INPUT AND OUTCOME DATA
   # DOWNLOAD SAMPLE INPUT DATA
   cat("DOWNLOAD SAMPLE INPUT DATA \n")
