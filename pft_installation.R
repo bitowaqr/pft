@@ -78,17 +78,17 @@ if(exists("first_start")==FALSE) {
   
   # 3. LOAD WFT INFRASTRUCTURE FROM GTIHUB
   cat("LOAD WFT INFRASTRUCTURE FROM GTIHUB \n")
+  cat("loading country_list  \n")
   country_list<-read.csv(file= "https://raw.githubusercontent.com/projectflutrend/pft/master/country_list.csv")[,-c(1,2,4)]
-  cat("country_list loaded \n")
+  cat("loading language_table \n")
   language_table<-read.csv(file="https://raw.githubusercontent.com/projectflutrend/pft/master/language_list.csv")
-  cat("language_table loaded \n")
+  cat("loading lookup_terms \n")
   lookup_terms<-load_url("https://github.com/projectflutrend/pft/blob/master/lookup_terms.RData?raw=true")
-  cat("lookup_terms loaded \n")
+  cat("loading empty list_of_inputs \n")
   list_of_inputs<- load_url("https://github.com/projectflutrend/pft/blob/master/list_of_inputs.RData?raw=true")
-  cat("empty list_of_inputs loaded \n")
+  cat("loading empty list_of_outcomes \n")
   list_of_outcomes<- load_url("https://github.com/projectflutrend/pft/blob/master/list_of_outcomes.rdata?raw=true")
-  cat("empty list_of_outcomes loaded \n")
-   
+
   # 4. LOAD INPUT AND OUTCOME DATA
   # DOWNLOAD SAMPLE INPUT DATA
   cat("DOWNLOAD SAMPLE INPUT DATA \n")
@@ -102,7 +102,7 @@ if(exists("first_start")==FALSE) {
 }
 
 # 5. RUN SHINY APP FROM GITHUB
-cat("Launching Wikipedia Flu Trend.alpha")
+cat("Launching Wikipedia Flu Trend.alpha \n \n")
 if(exists("list1")==FALSE){list1=list(e1=NULL,m1=NULL,info1=NULL)}
 if(exists("list2")==FALSE){list2=list(e2=NULL,m2=NULL,info2=NULL)}
 runGitHub("pft", "projectflutrend", subdir = "shiny", ref="shiny")

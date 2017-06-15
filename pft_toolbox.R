@@ -762,6 +762,7 @@ pft_model<-function(lang="nl",
                     wiki_normalization=0,
                     status=1){ 
 
+  op <- options(warn = (-1)) # suppress warnings 
   
   # setting up the working df
   df<-pft_build_up(start_date = start_date, 
@@ -981,4 +982,7 @@ pft_model<-function(lang="nl",
   attributes(PREDICTED)$detrend_robust<-detrend_robust
   attributes(PREDICTED)$wiki_normalization<-wiki_normalization
   return(PREDICTED)
+  
+  options(op)
+  
 } 
