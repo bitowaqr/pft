@@ -764,7 +764,6 @@ pft_model<-function(lang="nl",
 
   op <- options(warn = (-1)) # suppress warnings 
   time = Sys.time()
-  
   # setting up the working df
   df<-pft_build_up(start_date = start_date, 
                    end_date = end_date, 
@@ -842,11 +841,11 @@ pft_model<-function(lang="nl",
         
         # set up training and test data set
         train.data.ith<-df[df$date>=train.start.ith & df$date<=train.end.ith,]
-        train.x.ith<-data.matrix(train.data.ith[,-which(names(df)==type_of_outcome)])
+        train.x.ith<-data.matrix(train.data.ith[,-c(which(names(df)== "date"),which(names(df)==type_of_outcome))])
         train.y.ith<-train.data.ith[,which(names(df)==type_of_outcome)]
         
         test.data.ith<-df[df$date>=test.start.ith & df$date<test.end.ith,]
-        test.x.ith<-data.matrix(test.data.ith[,-which(names(df)==type_of_outcome)])
+        test.x.ith<-data.matrix(test.data.ith[,-c(which(names(df)== "date"),which(names(df)==type_of_outcome))])
         test.y.ith<-test.data.ith[,which(names(df)==type_of_outcome)]
         
         # lasso GLM
@@ -856,11 +855,11 @@ pft_model<-function(lang="nl",
         dates.for.validation=seq(from=train.start.ith,to=train.end.ith,by=1)
         if(cv_fold=="Y"){
           if(length(dates.for.validation)<365*3){stop("Training period too short for cv method")}
-          id=as.factor(format(dates.for.validation[dates.for.validation %in% train.x.ith[,1]],format="%Y"));nfolds=length(levels(id));
+          id=as.factor(format(dates.for.validation[dates.for.validation %in% train.data.ith[,1]],format="%Y"));nfolds=length(levels(id));
           cv.out=cv.glmnet(x=train.x.ith,y=train.y.ith, nfolds = nfolds, foldid = as.numeric(id))    }
         if(cv_fold=="M"){
           if(length(dates.for.validation)<90){stop("Training period too short for cv method")}
-          id=as.factor(format(dates.for.validation[dates.for.validation %in% train.x.ith[,1]],format="%Y-%m"));nfolds=length(levels(id))
+          id=as.factor(format(dates.for.validation[dates.for.validation %in% train.data.ith[,1]],format="%Y-%m"));nfolds=length(levels(id))
           cv.out=cv.glmnet(x=train.x.ith,y=train.y.ith, nfolds = nfolds, foldid = as.numeric(id))     }
         
         if(is.numeric(cv_fold)){split.size=length(dates.for.validation)/cv_fold;id=cut(dates.for.validation,split.size); nfolds=split.size
@@ -877,14 +876,14 @@ pft_model<-function(lang="nl",
         coefs<-names(lasso.coef[lasso.coef!=0])[-1] #takes away the intercept
         
         # train and test dataframes for predciting values in lm and glm
-        model.train.data.ith<-data.frame(train.y.ith,train.data.ith[,c(1,which(names(train.data.ith) %in% coefs))])
+        model.train.data.ith<-data.frame(train.y.ith,date= train.data.ith$date,train.data.ith[,c(which(names(train.data.ith) %in% coefs))])
         names(model.train.data.ith)<-c("outcome","date",coefs)
-        model.test.data.ith<-data.frame(test.y.ith,test.data.ith[,c(1,which(names(train.data.ith) %in% coefs))])
+        model.test.data.ith<-data.frame(test.y.ith,date=test.data.ith$date,test.data.ith[,c(which(names(train.data.ith) %in% coefs))])
         names(model.test.data.ith)<-c("outcome","date",coefs)
         model.all.data.ith<-rbind(model.train.data.ith, model.test.data.ith)
         
         # the lm model
-        lm.trained.ith<-lm(outcome~. ,data=model.train.data.ith[,-2])
+        lm.trained.ith<-lm(outcome~. -date ,data=model.train.data.ith)
         
         # A big list with all relevant values + plots
         PREDICTED[[i]]=list(model.stats=data.frame( # lasso glm results, not sure why they are different form lm...  
@@ -971,6 +970,9 @@ pft_model<-function(lang="nl",
     } # lm simple PREDCITED loop bracket
     
   } # ### Mehtod="simple.lm" bracket ends ###
+  
+  print(paste("time elapsed", round(Sys.time() - time,1),"sec" ))
+  
   attributes(PREDICTED)$lang<-lang
   attributes(PREDICTED)$country<-country
   attributes(PREDICTED)$start_date<-start_date
@@ -985,6 +987,5 @@ pft_model<-function(lang="nl",
   return(PREDICTED)
   
   options(op)
-  cat("time elapsed", Sys.time() - time,"sec" )
-  
+
 } 
