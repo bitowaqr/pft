@@ -105,7 +105,7 @@ if(exists("first_start")==FALSE) {
 cat("Launching Wikipedia Flu Trend.alpha")
 if(exists("list1")==FALSE){list1=list(e1=NULL,m1=NULL,info1=NULL)}
 if(exists("list2")==FALSE){list2=list(e2=NULL,m2=NULL,info2=NULL)}
-runGitHub("pft", "projectflutrend", subdir = "shiny")
+runGitHub("pft", "projectflutrend", subdir = "shiny", ref="shiny")
 
 # ... Voila
 
