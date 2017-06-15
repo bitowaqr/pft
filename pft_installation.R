@@ -97,10 +97,11 @@ if(exists("first_start")==FALSE) {
   list_of_outcomes<- load_flunet(country = c("iran","korea","czechia","usa","uk"),name_in_list=c("iran, islamic republic of","korea, republic of","czech republic","united states","united kingdom"))
   
   # Load local data
+  if(file.exists("/Users/waqr/Documents/Project Flu Trend/data/nl.ili.rdata")){
   nl.ili=load_local("/Users/waqr/Documents/Project Flu Trend/data/nl.ili.rdata")
   nl.ili = nl.ili[!is.na(nl.ili$ili_incidence),-2]
   list_of_outcomes = pft_store_outcomes(country = "netherlands", source_df = nl.ili)
-  
+  }
   first_start="First start completed!"
   cat("Everything is set up \nWFT should be ready to go! \n")
 }
