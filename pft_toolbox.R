@@ -578,7 +578,7 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
   } 
   
   if(method=="plot_mean_performance"){ 
-    
+    cat("Running 'plot_mean_performance' analyses")
     # getting the predcited values per predcition day for each day
     nowcast_eval<-NULL;date<-list(); dates.temp<-date()
     for(d in 1:length(pft_model_df)){
@@ -692,6 +692,8 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
   
   
   if(method=="nowcast"){ 
+    cat("Running Nowcast")
+    
     latest.lm=pft_model_df[[length(pft_model_df)]] # get latest model from pft_model
     today= Sys.Date() # what date is today?
     start.at=max(latest.lm$lm.model$model$date)   # looking 6 months back?!
@@ -722,6 +724,8 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
   } # if nowcast bracket end
   
   if(method=="prophet"){
+    cat("Running prophet")
+    
     train_df<-data.frame(date=pft_model_df[[1]]$lm.model$model$date,outcome=pft_model_df[[1]]$lm.model$model$outcome)
     for(i in 1:length(pft_model_df)){ # retriving dates and actual outcomes from pft_model, unneccassarily difficult!?
       temp2<-data.frame(date= pft_model_df[[i]]$lm.model$model$date,
@@ -971,7 +975,8 @@ pft_model<-function(lang="nl",
     
   } # ### Mehtod="simple.lm" bracket ends ###
   
-  print(paste("time elapsed", round(Sys.time() - time,1),"sec" ))
+  elapsed_time = Sys.time() - time
+  print(paste("time elapsed",round(elapsed_time,2),attributes(elapsed_time)$units))
   
   attributes(PREDICTED)$lang<-lang
   attributes(PREDICTED)$country<-country
