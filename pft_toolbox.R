@@ -763,6 +763,7 @@ pft_model<-function(lang="nl",
                     status=1){ 
 
   op <- options(warn = (-1)) # suppress warnings 
+  time = Sys.time()
   
   # setting up the working df
   df<-pft_build_up(start_date = start_date, 
@@ -984,5 +985,6 @@ pft_model<-function(lang="nl",
   return(PREDICTED)
   
   options(op)
+  cat("time elapsed", Sys.time() - time,"sec" )
   
 } 
