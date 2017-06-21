@@ -44,7 +44,16 @@
 #
 # 5. Download and run shiny app in your browser
 # 
-#############################################################
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# Contributions:
+# MediaWiki/Wikipedia API: https://www.mediawiki.org/wiki/API:Main_page
+# World Health Organization FluNET: http://www.who.int/influenza/gisrs_laboratory/flunet/en/
+# R Packages used: pageviews, ISOweek, wikipediatrend, RCurl, RJSONIO, glmnet, devtools
+#                  RCurl, shiny, prophet, dplyr, ggplot2, RJSONIO, purrr, xtable
+#
+#
+##########################################################################################################################
 
 # INSTALL WFT
 if(exists("first_start")==FALSE) {
@@ -59,7 +68,10 @@ if(exists("first_start")==FALSE) {
   required_packages<-c("pageviews","ISOweek","wikipediatrend","RCurl","RJSONIO","RCurl","shiny","prophet","dplyr","ggplot2","RJSONIO","purrr","xtable","glmnet","devtools")
   pft_packages(required_packages)
   
+
   # 2. LOAD WFT FUNCTIONS FROM GITHUB
+  cat("Installation WIKIPEDIA FLU TREND.alpha")
+  
   cat("LOAD WFT FUNCTIONS FROM GITHUB \n")
   source_https <- function(u, unlink.tmp.certs = FALSE) {
     # load package
