@@ -175,6 +175,17 @@ shinyServer(function(input, output,session) {
       output$forecast.plot<-renderPlot({
         eval_pft_model(list1$m1,method = "prophet",days_forecast = as.numeric(input$days.forecast), forecast_from = NULL) }) # PLOT forecast
     }) # PLOT forecast 
+    observeEvent(input$comparison, {  
+      output$comparison.plot<-renderPlot({
+          f1<-eval_pft_model(list1$m1,method = "comparison") 
+          plot1 <- f1 + ggtitle("")
+          plot2 <- f1 + ggtitle("") +
+            xlim(c(as.Date(layer_scales(f1)$x$range$range[2]-365,origin=as.Date("1970-01-01")),
+                   as.Date(layer_scales(f1)$x$range$range[2],origin=as.Date("1970-01-01"))))
+          plot_grid(plot1, plot2, nrow=2,ncol=1, labels=c('Overview model 1', 'Model 1 last 365 days'))
+      }) # PLOT comparison wikipedia vs prophet
+    })
+    
     output$summary.stats1 <- renderTable({
       Listener2 <- input$do
       isolate(backgroundchange())      
@@ -265,6 +276,17 @@ shinyServer(function(input, output,session) {
        
         eval_pft_model(list2$m2,method = "prophet",days_forecast = as.numeric(input$days.forecast2), forecast_from = NULL) }) # PLOT forecast
     }) # PLOT forecast 
+    observeEvent(input$comparison2, {  
+      output$comparison.plot2<-renderPlot({
+        f2<-eval_pft_model(list2$m2,method = "comparison") 
+        plot1 <- f2 + ggtitle("")
+        plot2 <- f2 + ggtitle("") +
+          xlim(c(as.Date(layer_scales(f2)$x$range$range[2]-365,origin=as.Date("1970-01-01")),
+                 as.Date(layer_scales(f2)$x$range$range[2],origin=as.Date("1970-01-01"))))
+        plot_grid(plot1, plot2,  nrow=2,ncol=1, labels=c('Overview model 2', 'Model 2 last 365 days'))
+      }) # PLOT comparison wikipedia vs prophet
+    })
+    
     output$summary.stats2 <- renderTable({
       Listener2 <- input$do2
       isolate(backgroundchange())      
@@ -272,6 +294,13 @@ shinyServer(function(input, output,session) {
                           mean.errors=round(list2$e2$mean.error.per.day,3),
                           sqr.errors=round(list2$e2$mean.sqr.error.per.day,3)))}) #summary stats text2
 
+    
+    #####    #####   #####    #####   #####    #####   #####    #####   #####    #####   
+     # PLOT comparison 
+    
+    #####    #####   #####    #####   #####    #####   #####    #####   #####    #####   
+    
+    
     backgroundchange <- reactive({
       invalidateLater(1000, session)
       
@@ -282,10 +311,10 @@ shinyServer(function(input, output,session) {
     observeEvent(input$example.1, {
       if(exists("example1a")){list1<<-example1a}
       if(exists("example1b")){list2<<-example1b}})
-    observeEvent(input$example.1, {
+    observeEvent(input$example.2, {
       if(exists("example2a")){list1<<-example2a}
       if(exists("example2b")){list2<<-example2b}})
-    observeEvent(input$example.1, {
+    observeEvent(input$example.3, {
       if(exists("example3a")){list1<<-example3a}
       if(exists("example3b")){list2<<-example3b}})
     

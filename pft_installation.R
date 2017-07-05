@@ -1,12 +1,12 @@
-###########################################################
-#                WIKIPEDIA FLU TREND.alpha                #
-#                                                         #
-#                   Maastricht University &               #
-#   Netherlands institute for health services research    #
-#                                                         #
-#                   Contact: Paul Schneider               #
-#               schneider.paulpeter@gmail.com             #
-###########################################################
+###############################################################
+#                  WIKIPEDIA FLU TREND.alpha                  #
+#                                                             #
+#                     Maastricht University &                 #
+#     Netherlands institute for health services research      #
+#                                                             #
+#                     Contact: Paul Schneider                 #
+#                 schneider.paulpeter@gmail.com               #
+###############################################################
 #
 # This is the installation for the Wikipedia Flu Trend.alpha platform (WFT)
 #
@@ -51,8 +51,6 @@
 # World Health Organization FluNET: http://www.who.int/influenza/gisrs_laboratory/flunet/en/
 # R Packages used: pageviews, ISOweek, wikipediatrend, RCurl, RJSONIO, glmnet, devtools
 #                  RCurl, shiny, prophet, dplyr, ggplot2, RJSONIO, purrr, xtable
-#
-#
 ##########################################################################################################################
 
 # INSTALL WFT
@@ -65,7 +63,7 @@ if(exists("first_start")==FALSE) {
         install.packages(package)}}
     return (eval(parse(text=paste("require(",package,")"))))
   }
-  required_packages<-c("pageviews","ISOweek","wikipediatrend","RCurl","RJSONIO","RCurl","shiny","prophet","dplyr","ggplot2","RJSONIO","purrr","xtable","glmnet","devtools")
+  required_packages<-c("pageviews","ISOweek","wikipediatrend","RCurl","RJSONIO","RCurl","shiny","prophet","dplyr","ggplot2","RJSONIO","purrr","xtable","glmnet","devtools","cowplot")
   pft_packages(required_packages)
   
 
@@ -113,6 +111,8 @@ if(exists("first_start")==FALSE) {
   nl.ili=load_local("/Users/waqr/Documents/Project Flu Trend/data/nl.ili.rdata")
   nl.ili = nl.ili[!is.na(nl.ili$ili_incidence),-2]
   list_of_outcomes = pft_store_outcomes(country = "netherlands", source_df = nl.ili)
+  de.ili<-load_local("/Users/waqr/Documents/Project Flu Trend/data/rki.de.rdata")
+  list_of_outcomes$germany = de.ili
   }
   first_start="First start completed!"
   cat("Everything is set up \nWFT should be ready to go! \n")

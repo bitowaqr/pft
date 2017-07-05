@@ -557,6 +557,7 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
                          days_forecast=28, # for prophet future df
                          forecast_from=NULL
                                     ){ 
+  time = Sys.time()
   
   if(method=="plot1"){
     where.to.look<-which(names(pft_model_df)== paste("t",eval_date,sep=""))
@@ -566,6 +567,7 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
     lm.trained=pft_model_df[[where.to.look]]$lm.model
     
     eval_from_date_plot=ggplot(data=all.data,aes(x=date,y=outcome)) +
+      theme_grey() + 
       geom_line() +
       geom_line(data=train.data, aes(x=date,y=predict(lm.trained,newdata = train.data) )  ,col="blue") +
       geom_line(data=test.data, aes(x=date,y=predict(lm.trained,newdata = test.data)),col="red") +
@@ -633,25 +635,41 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
     
     # Actual versus Predicted per day of prediciton
     test_actual_rate=ggplot(data=test_df,aes(x=date,y=outcome)) +
+      theme_grey() + 
       geom_line() 
     
     test_actual_vs_pred_all= test_actual_rate + 
-      geom_line(data=nowcast_eval,aes(x=date,y=pred.day.1,col=paste("pred.day.1")) ) +
-      geom_line(data=nowcast_eval,aes(x=date,y=pred.day.7,col=paste("pred.day.7")) ) +
-      geom_line(data=nowcast_eval,aes(x=date,y=pred.day.14,col=paste("pred.day.14")) ) +
-      geom_line(data=nowcast_eval,aes(x=date,y=pred.day.21,col=paste("pred.day.21")) ) +
-      geom_line(data=nowcast_eval,aes(x=date,y=pred.day.28,col=paste("pred.day.28")) ) 
+      theme_grey() + 
+      geom_line(data=nowcast_eval,aes(x=date,y=pred.day.1,col="day1") ) +
+      geom_line(data=nowcast_eval,aes(x=date,y=pred.day.7,col="day7") ) +
+      geom_line(data=nowcast_eval,aes(x=date,y=pred.day.14,col="day14") ) +
+      geom_line(data=nowcast_eval,aes(x=date,y=pred.day.21,col="day21") ) +
+      geom_line(data=nowcast_eval,aes(x=date,y=pred.day.28,col="day28") ) +
+      scale_colour_manual(values=c(day1="darkgreen",
+                                   day7="lightgreen",
+                                   day14="yellow",
+                                   day21="darkorange",
+                                   day28="darkred")) +
+      theme(legend.title=element_blank())
     
     test_actual_vs_pred_d7= test_actual_rate + 
+      theme_grey() + 
+      theme(legend.title=element_blank()) +
       geom_line(data=nowcast_eval,aes(x=date,y=pred.day.7,col=paste("pred.day.7")) )
     
     test_actual_vs_pred_d14= test_actual_rate + 
+      theme_grey() + 
+      theme(legend.title=element_blank()) +
       geom_line(data=nowcast_eval,aes(x=date,y=pred.day.14,col=paste("pred.day.14")) )
     
     test_actual_vs_pred_d21= test_actual_rate + 
+      theme_grey() + 
+      theme(legend.title=element_blank()) +
       geom_line(data=nowcast_eval,aes(x=date,y=pred.day.21,col=paste("pred.day.21")) )
     
     test_actual_vs_pred_d28= test_actual_rate + 
+      theme_grey() + 
+      theme(legend.title=element_blank()) +
       geom_line(data=nowcast_eval,aes(x=date,y=pred.day.28,col=paste("pred.day.28")) )
     
     nowcast_diff<-merge(nowcast_eval,test_df,by="date",all=F)
@@ -659,9 +677,11 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
     
     # How did the training period go?
     training_actual_rate=ggplot(data=train_df,aes(x=date,y=outcome)) +
+      theme_grey() + 
       geom_line() 
     
     training_actual_vs_pred= training_actual_rate + 
+      theme_grey() + 
       geom_line(data=train_df,aes(x=date,y=trained.predicted,col=paste("last training prediction")) ) 
     
     # Evaluating the mean error per prediction for day 1-28
@@ -687,6 +707,10 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
                                       mean.sqr.error.plot=mean.sqr.error.plot,
                                       training_actual_rate=training_actual_rate,
                                       training_actual_vs_pred=training_actual_vs_pred))
+    
+    elapsed_time = Sys.time() - time
+    print(paste("time elapsed",round(elapsed_time,2),attributes(elapsed_time)$units))
+    
     return( performance_eval  )
   } # if plot_mean_performance bracket end
   
@@ -716,10 +740,16 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
     
     # plotting things
     now.plot<-ggplot(data=nowcast.df, aes(x=date, y=prediction)) +
+      theme_grey() + 
       geom_line(linetype=1,col="lightblue",lwd=1.5) +
       geom_line(data=latest.lm$lm.model$model, aes(x=date,y=predict(latest.lm$lm.model)),col="blue",lwd=1.5) +
       geom_line(data=latest.lm$lm.model$model, aes(x=date,y=outcome),col="black",lwd=1.5) +
       geom_vline(xintercept = as.numeric(start.at))
+    
+    elapsed_time = Sys.time() - time
+    print(paste("time elapsed",round(elapsed_time,2),attributes(elapsed_time)$units))
+    
+  
     return(now.plot)
   } # if nowcast bracket end
   
@@ -739,9 +769,76 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
     future <- make_future_dataframe(prophet, periods = days_forecast)
     forecast <- predict(prophet, future)
     forecast_plot<-plot(prophet, forecast) +
+      theme_grey() + 
       geom_vline(xintercept = as.numeric(last_data_date))
     return(forecast_plot)
   } # if prophet bracket end
+  
+  
+  if(method=="comparison"){ 
+    cat("Running comparison between wikipedia nowcast and prophet forecast \n")
+    
+    ##### NOWCAST PART
+    latest.lm=pft_model_df[[length(pft_model_df)]] # get latest model from pft_model
+    today= Sys.Date() # what date is today?
+    start.at=max(latest.lm$lm.model$model$date)   # looking 6 months back?!
+    start.at<-as.Date(ifelse(length(seq(from=start.at,to=today,by=1))>60,start.at,today-60),origin=as.Date("1970-01-01"))
+    pages=row.names(data.frame(latest.lm$lm.model$coefficients)) # names for looking up recent wikipedia data
+    pages=pages[!pages  %in% c("date","(Intercept)")] # eliminating date and intercepts from page nams
+    new_wiki_data=tryCatch({ pft_pc(page=pages,  # look up recent wikipedia page views
+                                    lang=attr(pft_model_df, "lang"),
+                                    start_date = start.at,
+                                    end_date = today)},error=function(e){stop("Sorry, some of the pages that are used in the model can not be found on today's Wikipedia")})
+    new_wiki_data=reformat_wiki(df=new_wiki_data[which(lapply(new_wiki_data, length)>0)]) # eliminate all items with length = 0 (intercept, date,...)
+    
+    if(attr(pft_model_df,"detrending")==1){
+      names<-names(new_wiki_data)
+      for(o in 1:length(names(new_wiki_data)[-1]))
+        new_wiki_data[,o+1]<-as.numeric(stl(ts(new_wiki_data[,o+1],freq=7),s.window = 7,t.window=attr(pft_model_df,"detrend_window"),robust=attr(pft_model_df,"detrend_robust"))$time.series[,2])
+    }
+    nowcast.predictions=predict(latest.lm$lm.model, newdata=new_wiki_data) # make new predictions with recent wiki data
+    nowcast.df=data.frame(date=new_wiki_data$date, prediction=nowcast.predictions)
+    
+    
+    
+    #####  PROPHET PART
+    train_df<-data.frame(date=pft_model_df[[1]]$lm.model$model$date,outcome=pft_model_df[[1]]$lm.model$model$outcome)
+    for(i in 1:length(pft_model_df)){ # retriving dates and actual outcomes from pft_model, unneccassarily difficult!?
+      temp2<-data.frame(date= pft_model_df[[i]]$lm.model$model$date,
+                        outcome=pft_model_df[[i]]$lm.model$model$outcome)
+      train_df=rbind(train_df,temp2[-which(temp2$date %in% train_df$date),])
+    }
+    df=data.frame(ds=train_df$date,y=train_df$outcome)
+    if(class(forecast_from)=="Date"){df=df[df$ds<=forecast_from,]}
+    last_data_date<-max(df$ds)
+    prophet<-prophet(df,yearly.seasonality=TRUE)
+    future <- make_future_dataframe(prophet, periods =  max(nowcast.df$date) - max(df$ds)   )
+    forecast <- predict(prophet, future)
+    f1<-plot(prophet, forecast) +
+      geom_vline(xintercept = as.numeric(last_data_date))
+    
+    # plotting things
+    comparison.plot = ggplot() +
+      geom_ribbon(data=f1$data,aes( x=ds, ymin=yhat_lower, ymax=yhat_upper, group = 1,color="ProphetForecast"),inherit.aes=FALSE, alpha=0.1,lwd=0.02) +
+      geom_line(data=latest.lm$lm.model$model, aes(x=date,y=outcome,color="Observed",group=1),lwd=1.5) +
+      geom_vline(xintercept = as.numeric(start.at)) +
+      geom_line(data=latest.lm$lm.model$model, aes(x=date,y=predict(latest.lm$lm.model),color="WikiNowcast",group=1),col="orange",lwd=1) +
+      geom_line(data=nowcast.df, aes(x=date, y=prediction,color="WikiNowcast",group=1),lwd=1.5) +
+      geom_line(data=f1$data, aes(x=ds,y=yhat,col="ProphetForecast"),linetype="dashed",group=1) +
+      xlab("Date") +
+      theme_light() +
+      ggtitle("Wikipedia Nowcast versus prophet forecast") +
+      scale_colour_manual(values=c(Observed="black",
+                                   ProphetForecast="darkblue",
+                                   WikiNowcast="orange"))
+    
+    
+    elapsed_time = Sys.time() - time
+    print(paste("time elapsed",round(elapsed_time,2),attributes(elapsed_time)$units))
+    
+    return(comparison.plot)
+  } # if comparison bracket end
+  
   
 }  # eval_date="20160801")# format="YYYYMMDD") or NULL
 

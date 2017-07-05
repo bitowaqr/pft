@@ -171,6 +171,17 @@ shinyUI(fluidPage(
                       mainPanel(plotOutput("forecast.plot"),plotOutput("forecast.plot2")
                                 )
              ),
+             tabPanel("Comparison",
+                      sidebarPanel("Comparing Wikipedia Nowcast with Prophet forecast",
+                                   br(),br(),
+                                   actionButton("comparison","Comparison for model 1"),
+                                   br(),br(),
+                                   actionButton("comparison2","Comparison for model 2")
+                                  ),
+                      
+                      mainPanel(plotOutput("comparison.plot"),plotOutput("comparison.plot2")
+                                )
+             ),
              tabPanel("Examples",sidebarPanel( "You can store examples using \n",
                                                br(),"\n",                                             
                                                br(),"\n",
