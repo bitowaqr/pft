@@ -43,7 +43,7 @@ shinyUI(fluidPage(
                                                   startview = "year"),
                                    # method
                                    selectInput("pft_model.method","choose a modelling method",
-                                               choices=c("cv","simple.lm"), selected = "simple.lm"),
+                                               choices=c("cv","simple.lm","cubic.lm"), selected = "simple.lm"),
                                    br(),br(),
                                    "Futher options:",
                                    # cv_fold
