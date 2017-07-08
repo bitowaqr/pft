@@ -1097,8 +1097,7 @@ pft_model<-function(lang="nl",
       # the lm model
       if(length(train.data.ith)>3 ){stop("Function only works with a single independent variable...")}
       cubic.name = names(train.data.ith)[3]
-      formula = paste("lm(outcome ~poly(",cubic.name," ,degree=3,raw=T) -date ,data=train.data.ith)")
-      lm.trained.ith<-lm(formula,data=train.data.ith)
+      lm.trained.ith<-eval(parse(text=paste("lm(outcome ~poly(",cubic.name," ,degree=3,raw=T) -date ,data=train.data.ith)")))
       
       # A big list with all relevant values + plots
       PREDICTED[[i]]=list(
