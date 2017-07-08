@@ -68,7 +68,7 @@ if(exists("first_start")==FALSE) {
   
 
   # 2. LOAD WFT FUNCTIONS FROM GITHUB
-  cat("Installation WIKIPEDIA FLU TREND.alpha")
+  cat("Installation WIKIPEDIA FLU TREND.alpha \n")
   
   cat("LOAD WFT FUNCTIONS FROM GITHUB \n")
   source_https <- function(u, unlink.tmp.certs = FALSE) {

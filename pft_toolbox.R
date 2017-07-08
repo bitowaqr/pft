@@ -842,13 +842,14 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
   
 }  # eval_date="20160801")# format="YYYYMMDD") or NULL
 
+
 pft_model<-function(lang="nl",
                     start_date="auto", # auto will get min date
                     end_date="auto",   # auto will get max date
                     type_of_outcome="Influenza_AB_lab_incidence",
                     country = "netherlands",
                     type_of_input = c("wiki_primary","wiki_linked"), # + wiki_relared? + wiki_random?!
-                    method="simple.lm", # "cv" or "simple.lm"
+                    method="simple.lm", # "cv" or "simple.lm" or "cubic.lm"
                     cv_fold="M", # "M", "Y", or a number indicating the number of combined days to be sampled to sampled? size 
                     cv_lambda="min", #  "min" or "1se"... a number is possible but nonsense!
                     grid=10^seq(10,-2,length=100), # a grid for cv, default!
@@ -862,7 +863,7 @@ pft_model<-function(lang="nl",
                     time_lag= 0, # how many days is official data behind? -7 for 1 week behind page view data
                     wiki_normalization=0,
                     status=1){ 
-
+  
   op <- options(warn = (-1)) # suppress warnings 
   time = Sys.time()
   # setting up the working df
@@ -1059,7 +1060,7 @@ pft_model<-function(lang="nl",
         lm.model=lm.trained.ith, # end list PREDICTED 
         
         test.data=test.data.ith
-
+        
       )
       
       names(PREDICTED)[i]<-paste("t",format(test.start.ith,format="%Y%m%d"),sep="")      
@@ -1071,6 +1072,60 @@ pft_model<-function(lang="nl",
     } # lm simple PREDCITED loop bracket
     
   } # ### Mehtod="simple.lm" bracket ends ###
+  if(method=="cubic.lm"){ 
+    for(i in seq(1:max(n.eval.steps))){ # evaluation_intervall?? -1??? or 0???
+      
+      if(as.character(training_period)=="past"){d=0} # for "past" the training period icreases
+      if(is.numeric(training_period)==T){d=i}
+      train.start.ith=training.start.at+d # for "past" the training period icreases
+      train.end.ith=training.start.at+train.period+i
+      
+      test.start.ith=train.end.ith+1
+      test.end.ith=test.start.ith+eval_period
+      
+      # set up training and test data set
+      train.data.ith<-df[df$date>=train.start.ith & df$date<=train.end.ith,]
+      names(train.data.ith)[which( names(train.data.ith)==type_of_outcome)]<-"outcome"
+      
+      test.data.ith<-df[df$date>=test.start.ith & df$date<test.end.ith,]
+      names(test.data.ith)[which( names(test.data.ith)==type_of_outcome)]<-"outcome"
+      
+      all.data.ith<-rbind(train.data.ith, test.data.ith)
+      
+      # the lm model
+      if(length(train.data.ith)>3 ){stop("Function only works with a single independent variable...")}
+      cubic.name = names(train.data.ith)[3]
+      formula = paste("lm(outcome ~poly(",cubic.name," ,degree=3,raw=T) -date ,data=train.data.ith)")
+      lm.trained.ith<-lm(formula,data=train.data.ith)
+      
+      # A big list with all relevant values + plots
+      PREDICTED[[i]]=list(
+        model.stats=data.frame( # lm results
+          predicted.lm=as.numeric(predict(lm.trained.ith,newdata = test.data.ith)),    
+          sqr.difference.lm=(as.numeric(predict(lm.trained.ith,newdata = test.data.ith))-test.data.ith$outcome)^2,
+          abs.difference.lm=sqrt( (as.numeric(predict(lm.trained.ith,newdata = test.data.ith))-test.data.ith$outcome)^2 ),
+          mean.sqr.difference.lm=mean((as.numeric(predict(lm.trained.ith,newdata = test.data.ith))-test.data.ith$outcome)^2),
+          mean.abs.difference.lm=mean(sqrt( (as.numeric(predict(lm.trained.ith,newdata = test.data.ith))-test.data.ith$outcome)^2 )),
+          mod.trained.adj.r.sqr.lm=summary(lm.trained.ith)$adj.r.squared,
+          # adjusted r2 for prediction is possible. need to look up formula!
+          mod.tested.r.sqr.lm=cor(predict(lm.trained.ith,newdata = test.data.ith), test.data.ith$outcome)^2),  
+        
+        lm.model=lm.trained.ith, # end list PREDICTED 
+        
+        test.data=test.data.ith
+        
+      )
+      
+      names(PREDICTED)[i]<-paste("t",format(test.start.ith,format="%Y%m%d"),sep="")      
+      
+      
+      
+      if(status==1){ cat("status:",round((i)/length(n.eval.steps)*100,2), "% \n") }
+      
+    } # lm simple PREDCITED loop bracket
+    
+  } # ### Mehtod="simple.lm" bracket ends ###
+  
   
   elapsed_time = Sys.time() - time
   print(paste("time elapsed",round(elapsed_time,2),attributes(elapsed_time)$units))
@@ -1089,5 +1144,5 @@ pft_model<-function(lang="nl",
   return(PREDICTED)
   
   options(op)
-
+  
 } 
