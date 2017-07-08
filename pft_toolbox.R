@@ -1072,6 +1072,8 @@ pft_model<-function(lang="nl",
     } # lm simple PREDCITED loop bracket
     
   } # ### Mehtod="simple.lm" bracket ends ###
+  
+  
   if(method=="cubic.lm"){ 
     for(i in seq(1:max(n.eval.steps))){ # evaluation_intervall?? -1??? or 0???
       
@@ -1124,7 +1126,7 @@ pft_model<-function(lang="nl",
       
     } # lm simple PREDCITED loop bracket
     
-  } # ### Mehtod="simple.lm" bracket ends ###
+  } # ### Mehtod="cubic.lm" bracket ends ###
   
   
   elapsed_time = Sys.time() - time
