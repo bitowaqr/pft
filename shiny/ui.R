@@ -44,18 +44,10 @@ shinyUI(fluidPage(
                                    # method
                                    selectInput("pft_model.method","choose a modelling method",
                                                choices=c("cv","simple.lm","cubic.lm"), selected = "simple.lm"),
-                                   br(),br(),
-                                   "Futher options:",
-                                   # cv_fold
-                                   textInput("pft_model.cv_fold","cv by (M,Y or a number of days)",
-                                             value="M"),
-                                   # cv_lambda
-                                   selectInput("pft_model.lambda","CV lamda",
-                                             choices = c("1se","min"),selected = "1se"),
+                                   br(),
                                    # training period
                                    textInput("pft_model.training_period","On how many days should the model be trained?",
-                                                value="past"),
-                                   br(),
+                                             value="past"),
                                    # detrend
                                    checkboxInput("pft_model.detrending", "Seasonal decomposition?",
                                                  value=T),
@@ -68,6 +60,15 @@ shinyUI(fluidPage(
                                    # time_lag
                                    numericInput("pft_model.time_lag","time lag in days",
                                                 value=0),
+                                   br(),br(),
+                                   "Futher options:",
+                                   # cv_fold
+                                   textInput("pft_model.cv_fold","cv by (M,Y or a number of days)",
+                                             value="M"),
+                                   # cv_lambda
+                                   selectInput("pft_model.lambda","CV lamda",
+                                             choices = c("1se","min"),selected = "1se"),
+                                  
                                    # Normalization
                                    checkboxInput("pft_model.wiki_normalization", "random normalization",
                                                  value=F),
@@ -131,15 +132,15 @@ shinyUI(fluidPage(
              ), # tab panel 2 ends here
              
              tabPanel("single date plots",
-                      sidebarPanel("Evaluate model 1 at date",br(), br(),
+                      sidebarPanel("Select date of last data input to see how the model would hvae performed over the following 28 days.",br(), br(),
                                    sliderInput("pickdate",  
-                                               "Pick a date", min=as.Date("2010-01-01"),
+                                               "Evaluate Model 1", min=as.Date("2010-01-01"),
                                                max=as.Date("2017-01-01"), 
                                                value=as.Date("2010-02-02"),timeFormat="%F"),
                                    br(),br(),br(),
-                                   "Evaluate model 2 at date",br(), br(),
+                                   "Select date of last data input to see how the model would hvae performed over the following 28 days.",br(), br(),
                                    sliderInput("pickdate2",  
-                                               "Pick a date", min=as.Date("2010-01-01"),
+                                               "Evaluate Model 2", min=as.Date("2010-01-01"),
                                                max=as.Date("2017-01-01"), 
                                                value=as.Date("2010-02-02"),timeFormat="%F")
                                    ),

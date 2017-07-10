@@ -1,6 +1,6 @@
 ###-----------------------------------------------------------------###
 ###-----------------------------------------------------------------###
-###           Project FLu Trend.alpha - Toolbox                     ###
+###           Wikipedia FLu Trend.alpha - Toolbox                   ###
 ###-----------------------------------------------------------------###
 ###-----------------------------------------------------------------###
 
@@ -224,7 +224,7 @@ update_input_wiki<-function(type_of_inputs=c("wiki_primary","wiki_linked","wiki_
   end.at<-as.Date(Sys.time())
   
   if(sum(type_of_inputs=="wiki_primary")==1){
-    start.at=max(df[[item]]$wiki_primary[[1]]$date[!is.na(  df[[item]]$wiki_primary[[1]][,2])],na.rm=T) # last date for which wiki_primary has view data
+    start.at=max(df[[item]]$wiki_primary[[1]]$date[!is.na(  df[[item]]$wiki_primary[[1]][,2])],na.rm=T) + 1# last date for which wiki_primary has view data
     cat("update wiki_primary \n")
     update_wiki_primary=pft_pc(page=df[[item]]$wiki_lookup_searches$wiki_primary_term,
                                lang=lang,
@@ -233,7 +233,8 @@ update_input_wiki<-function(type_of_inputs=c("wiki_primary","wiki_linked","wiki_
                                status=1)
     
     df[[item]]$wiki_primary[[1]]<-rbind(df[[item]]$wiki_primary[[1]],update_wiki_primary[[1]]) # combine old and new
-  }
+    df[[item]]$wiki_primary[[1]] = df[[item]]$wiki_primary[[1]]
+    }
   
   
   if(sum(type_of_inputs=="wiki_linked")==1){
@@ -259,6 +260,8 @@ update_input_wiki<-function(type_of_inputs=c("wiki_primary","wiki_linked","wiki_
     for(i in 1:length(update_wiki_related)){
       df[[item]]$wiki_related[[i]]<-rbind(df[[item]]$wiki_related[[i]],update_wiki_related[[i]]) # combine old and new
     }}
+  
+  
   
   return(df)
 }
@@ -454,9 +457,7 @@ pft_initiate<-function(lang="nl",start_date=as.Date("2010-01-01"),end_date=Sys.D
   
   return(df)
 }
-
-# More complex functions:
-pft_weeks_to_days<-function(weekly_counts,  # vector with outcome ata
+pft_weeks_to_days<-function(weekly_counts,  # vector with outcome data
                             week_dates=NULL, # vector with weekly dates
                             format="%Y-%u", # dates can have several formats:'%Y-%u' (2010-01),'%Y-W%V-%u'(2010-W01) and '%Y-%U-%u'(2010-01-07) 
                             special.fun="53to1" # special functions to deal with specialitirs of certain countries or datasets
@@ -505,10 +506,9 @@ pft_weeks_to_days<-function(weekly_counts,  # vector with outcome ata
   df_daily$count[is.na(df_daily$count)]<-0
   return(df_daily)
 } 
-
 pft_build_up<-function(country="germany",
                        lang="de",
-                       type_of_outcome="Influenza_AB_lab_incidence_std",
+                       type_of_outcome="Influenza_AB_lab_incidence",
                        type_of_input=c("wiki_primary", "wiki_linked","wiki_related"), 
                        start_date=start_date, 
                        end_date=end_date,
@@ -551,11 +551,13 @@ pft_build_up<-function(country="germany",
                      min date, max date, type in, type out")}
   }
 
+# : : Core functions : : #
+
 eval_pft_model<-function(pft_model_df, # a list, created by pft_model
-                         method="plot_mean_performance", # "plot_mean_performance","nowcast" or "plot1"
+                         method="plot_mean_performance", # "plot_mean_performance","nowcast" or "plot1" or "comparison"
                          eval_date="20160801", # for method = "plot1"
                          days_forecast=28, # for prophet future df
-                         forecast_from=NULL
+                         forecast_from=NULL # eval_date="20160801")# format="YYYYMMDD") or NULL
                                     ){ 
   time = Sys.time()
   
@@ -577,8 +579,8 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
                label = paste("tested r2=", round(cor(predict(lm.trained,newdata = test.data), test.data$outcome)^2,3) ) ,col="red")
     return(eval_from_date_plot)
     
-  } 
-  
+  } # if plot1 bracket end
+
   if(method=="plot_mean_performance"){ 
     cat("Running 'plot_mean_performance' analyses")
     # getting the predcited values per predcition day for each day
@@ -714,7 +716,6 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
     return( performance_eval  )
   } # if plot_mean_performance bracket end
   
-  
   if(method=="nowcast"){ 
     cat("Running Nowcast")
     
@@ -773,7 +774,6 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
       geom_vline(xintercept = as.numeric(last_data_date))
     return(forecast_plot)
   } # if prophet bracket end
-  
   
   if(method=="comparison"){ 
     cat("Running comparison between wikipedia nowcast and prophet forecast \n")
@@ -840,8 +840,7 @@ eval_pft_model<-function(pft_model_df, # a list, created by pft_model
   } # if comparison bracket end
   
   
-}  # eval_date="20160801")# format="YYYYMMDD") or NULL
-
+}  
 
 pft_model<-function(lang="nl",
                     start_date="auto", # auto will get min date

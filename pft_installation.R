@@ -4,6 +4,8 @@
 #                     Maastricht University &                 #
 #     Netherlands institute for health services research      #
 #                                                             #
+#           For more info, go to https://goo.gl/NT2DfQ        #
+#                                                             #
 #                     Contact: Paul Schneider                 #
 #                 schneider.paulpeter@gmail.com               #
 ###############################################################
@@ -14,25 +16,25 @@
 # All required required R-packages, data and WFT functions will be downloaded 
 # When launched for the first time, this process may take a few minutes. 
 # Afterwards, the platform should automatically start in your browser. 
-#
+# 
 #
 # ------ INSTALLATION DETAILS AND QUICK MANUAL -------
 #
-# 1. Install and load all required R-packages
+#  # 1. Installs and load all required R-packages
 # 
-# 2. Load WFT functions from github
+#  # 2. Loads WFT functions from github 
 #
-# 3. Load the infrastrucutre of WFT from github:
+#  # 3. Loads the infrastrucutre of WFT from github:
 #     - country_list: provides names and ISO codes for all countries
 #     - language_table: provides names and ISO codes for all languages 
 #     - lookup_terms: contains all primary, linked and related terms to look up on Wikipedia in most languages
 #     - list_of_inputs: this is the list where all the data from Wikipedia will be stored, under the ISO code of the language
 #     - list_of_outcomes: this is the list where all outcome data will be stored, under the name of the country
 #
-# 4. Download a sample collection of wikipedia inputs and WHO-Flunet outcome data from github
-#    You can use several functions to add more inputs or outcomes. 
-#    You can look up country and language ISO codes in 'country_list' and 'language_table'
-#    The data that you load using these functions will remain on your computer
+#  # 4. Downloads a sample collection of wikipedia inputs and WHO-Flunet outcome data from github
+#       You can use several functions to add more inputs or outcomes. 
+#       You can look up country and language ISO codes in 'country_list' and 'language_table'
+#       The data that you load using these functions will remain on your computer
 #        - 'pft_initiate(lang="es")' will download spanish Wikipedia data from 2010-01-01 until today
 #        - 'pft_add_related_terms(type="wiki_related",terms=c("Fieber","Husten"), lang="de")' will add "Fieber" 
 #            and "Husten" as terms in  the wiki_related category within the German wiki input data. 
@@ -42,18 +44,11 @@
 #           store local outcome data. source_df must be a type "data.frame" with one date vector (named "date")
 #           and one numeric vector with a names that fits a category within list_of_outcomes
 #
-# 5. Download and run shiny app in your browser
+#  # 5. Downloads and run shiny app in your browser
 # 
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-# Contributions:
-# MediaWiki/Wikipedia API: https://www.mediawiki.org/wiki/API:Main_page
-# World Health Organization FluNET: http://www.who.int/influenza/gisrs_laboratory/flunet/en/
-# R Packages used: pageviews, ISOweek, wikipediatrend, RCurl, RJSONIO, glmnet, devtools
-#                  RCurl, shiny, prophet, dplyr, ggplot2, RJSONIO, purrr, xtable
 ##########################################################################################################################
 
-# INSTALL WFT
+# INSTALL WFT.alpha
 if(exists("first_start")==FALSE) {
   # 1. INSTALL AND LOAD REQUIRED R-PACKAGES
   cat("INSTALL AND LOAD REQUIRED R-PACKAGES \n")
