@@ -1,6 +1,6 @@
 __WIKIPEDIA FLU TREND.alpha [DEPRECATED]__  
 
-__Quick Start__: Copy-Paste and run these three lines of code in your up-to-date version of R.  Everything will be downloaded automatically and the platform will launch in your browser (First installation may take a few minutes):
+__Quick Start__: Copy-Paste and run these three lines of code in your up-to-date version of R.  Everything will be downloaded automatically and the platform should launch in your browser (First installation may take a few minutes):
 
 ```ruby
 if(eval(require(RCurl))==0){install.packages("RCurl")}
